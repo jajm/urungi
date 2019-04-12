@@ -1,7 +1,14 @@
-<h2>Import layers, reports and dashboards </h2>
+
 
 <div class="container-fluid branded-border-panel" ng-init="initImport()">
 
+  <div class="main col-md-3" ng-include="'partials/home/sidebar.html'">
+  </div>
+
+  <div class="main col-md-9">
+      <div class="container-fluid branded-border-panel">
+        <h3>Import layers, reports and dashboards </h3>
+        </div>
     <span ng-if="state === 1">
         <span ng-if="importFile">
             <div ng-if="importFile.layers.length">
@@ -40,7 +47,7 @@
                 </ul>
             </div>
         </span>
-    
+
         <button class="btn btn-success" ng-click="startImport()" ng-show="importFile">import</button>
         <br>
         <div class="btn btn-default" ng-app="fileUpload" ngf-select="upload($file)">Choose file to import</div>
@@ -119,5 +126,6 @@
         <button ng-click="initImport()">Import new file</button>
         <a class="button" href="/#/home">Back to main page</a>
     </span>
-</div>
 
+</div>
+</div>
