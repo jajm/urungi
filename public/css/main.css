@@ -1921,11 +1921,16 @@ img.img-cirlce {
   background-color: #eeeeee;
 }
 
-#dropdownMenu1, #dropdownMenu2, #dropdownMenu3 {
+#dropdownMenu2, #dropdownMenu3 {
   background-color: #eeeeee;
   display: flex;
-  margin-top: 15px;
   margin-bottom: 15px;
+  border-bottom: 1px solid #000000;
+}
+
+#dropdownMenu1 {
+  background-color: #eeeeee;
+  display: flex;
   border-bottom: 1px solid #000000;
 }
 
