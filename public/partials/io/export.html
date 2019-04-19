@@ -7,13 +7,10 @@
       <div class="container-fluid branded-border-panel">
         <h3>Export layers, reports and dashboards </h3>
         </div>
-        <div class="dropdown">
-          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <h5>Layers</h5>
-            <span class="caret"></span>
-          </button>
+        <details id="details1">
+            <summary>Layers</summary>
 
-        <ul id="dropdownExport1" class="dropdown-menu" aria-labelledby="dropdownMenu1">
+        <ul id="dropdownExport1">
             <li ng-repeat="layer in layers">
                 <div>
                     <input type="checkbox" ng-model="layer.checked">
@@ -21,18 +18,14 @@
                 </div>
             </li>
         </ul>
-
+        </details>
         <i>Required Layers for chosen reports and dashboards will be included automatically, there is no need to include them manually.</i>
-        </div>
         <br>
 
-        <div class="dropdown">
-          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <h5>Reports</h5>
-            <span class="caret"></span>
-          </button>
+        <details id="details2">
+            <summary>Reports</summary>
 
-          <ul id="dropdownExport2" class="dropdown-menu" aria-labelledby="dropdownMenu2">
+          <ul id="dropdownExport2">
               <li ng-repeat="report in reports">
                   <div>
                       <input type="checkbox" ng-model="report.checked">
@@ -40,15 +33,12 @@
                   </div>
               </li>
           </ul>
-        </div>
+        </details>
 
-        <div class="dropdown">
-          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <h5>Dashboards</h5>
-            <span class="caret"></span>
-          </button>
+        <details id="details3">
+            <summary>Dashboards</summary>
 
-          <ul id="dropdownExport3" class="dropdown-menu" aria-labelledby="dropdownMenu3">
+          <ul id="dropdownExport3">
               <li ng-repeat="dashboard in dashboards">
                   <div>
                       <input type="checkbox" ng-model="dashboard.checked">
@@ -56,7 +46,7 @@
                   </div>
               </li>
           </ul>
-        </div>
+        </details>
 
     <input type="text" ng-model="exportName">
     .json
