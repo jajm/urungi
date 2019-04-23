@@ -137,6 +137,65 @@ angular.module('app').service('ioModel', function (connection, $q) {
         return connection.post('/api/dashboardsv2/create', dashboard);
     }
 
+    this.importCheck = function (bundle, DatasourcesRef) {
+        const additions = [];
+        const messages = [];
+        const updated = [];
+
+        const layerPromises = [];
+        for (const layer of bundle.layers) {
+            const p = getLayer(layer._id).then(l => {
+                if (l) {
+                    if ($scope.replaceCheck.value == true) {
+                        return importLayer(layer, datasourceRef).then(l => {
+                            updated.push(l);
+                        });
+                    }
+                    messages.push('Layer already exists in database: ' + l.name);
+                }
+            });
+            layerPromises.push(p);
+        }
+
+        return $q.all(layerPromises).then(() => {
+            const promises = [];
+            for (const report of bundle.reports) {
+                const p = getReport(report._id).then(r => {
+                    if (r) {
+                        messages.push('Report exists in database: ' + r.reportName);
+                        return;
+                    }
+
+                    return importReport(report, datasourceRef).then(r => {
+                        updated.push(r);
+                    });
+                });
+                promises.push(p);
+            }
+
+            for (const dashboard of bundle.dashboards) {
+                const p = getDashboard(dashboard._id).then(d => {
+                    if (d) {
+                        messages.push('Dashboard already exists in database: ' + d.dashboardName);
+                        return;
+                    }
+
+                    return importDashboard(dashboard, datasourceRef).then(d => {
+                        updated.push(d);
+                    });
+                });
+                promises.push(p);
+            }
+
+            return $q.all(promises).then(() => {
+                return {
+                    updated: updated,
+                    messages: messages,
+                };
+            });
+        });
+    };
+
     this.importBundle = function (bundle, datasourceRef) {
         const additions = [];
         const messages = [];

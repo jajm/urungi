@@ -40,7 +40,7 @@
                 </ul>
             </div>
         </span>
-    
+
         <button class="btn btn-success" ng-click="startImport()" ng-show="importFile">import</button>
         <br>
         <div class="btn btn-default" ng-app="fileUpload" ngf-select="upload($file)">Choose file to import</div>
@@ -51,7 +51,7 @@
     <span ng-if="state === 2">
         <h4>Please associate the imported data sources to the local ones</h4>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <h5>Imported data sources</h5>
                 <ul>
                     <li ng-repeat="dts in importFile.datasources">
@@ -70,13 +70,38 @@
                 <button ng-click="cancelImport()">cancel</button>
 
             </div>
-            <div class="col-md-4">
-                <h5>Existing data sources</h5>
+            <div class="col-md-3">
+                <h5>Existing Layers</h5>
                 <ul>
-                    <li ng-repeat="dts in localDataSources">
+                    <li ng-repeat="item in importFile.layers">
                         <div>
-                            {{dts.name}}
+                            {{item.name}}
                         </div>
+                        <input type="checkbox" ng-model="replaceCheck.value" ng-value="boolean">
+                    </li>
+                </ul>
+
+            </div>
+            <div class="col-md-3">
+                <h5>Existing Reports</h5>
+                <ul>
+                    <li ng-repeat="item in importFile.reports">
+                        <div>
+                            {{item.reportName}}
+                        </div>
+                          <input type="checkbox" ng-model="replaceCheck.value">
+                    </li>
+                </ul>
+
+            </div>
+            <div class="col-md-3">
+                <h5>Existing Dashboards</h5>
+                <ul>
+                    <li ng-repeat="item in importFile.dashboards">
+                        <div>
+                            {{item.dashboardName}}
+                        </div>
+                        <input type="checkbox" ng-model="replaceCheck.value"  ng-value="boolean">
                     </li>
                 </ul>
 
@@ -97,6 +122,14 @@
         </div>
         <div ng-if="!created.length">
             No new item has been created.
+        </div>
+
+        <div ng-if="created.length">
+            <ul>
+                <li ng-repeat="item in updated">
+                    {{item.item.name || item.item.reportName || item.item.dashboardName}}
+                </li>
+            </ul>
         </div>
 
         <div ng-if="messages.length">
@@ -120,4 +153,3 @@
         <a class="button" href="/#/home">Back to main page</a>
     </span>
 </div>
-

@@ -96,6 +96,7 @@ angular.module('app').controller('ioCtrl', function ($scope, $rootScope, $q, con
             $scope.created = result.additions;
             $scope.messages = result.messages;
         },
+
         function (error) {
             $scope.state = 4;
             $scope.created = false;
