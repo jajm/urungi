@@ -95,6 +95,7 @@ angular.module('app').controller('ioCtrl', function ($scope, $rootScope, $q, con
             $scope.state = 3;
             $scope.created = result.additions;
             $scope.messages = result.messages;
+            $scope.replace = result.replace;
         },
 
         function (error) {

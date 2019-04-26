@@ -137,75 +137,22 @@ angular.module('app').service('ioModel', function (connection, $q) {
         return connection.post('/api/dashboardsv2/create', dashboard);
     }
 
-    this.importCheck = function (bundle, DatasourcesRef) {
-        const additions = [];
-        const messages = [];
-        const updated = [];
-
-        const layerPromises = [];
-        for (const layer of bundle.layers) {
-            const p = getLayer(layer._id).then(l => {
-                if (l) {
-                    if ($scope.replaceCheck.value == true) {
-                        return importLayer(layer, datasourceRef).then(l => {
-                            updated.push(l);
-                        });
-                    }
-                    messages.push('Layer already exists in database: ' + l.name);
-                }
-            });
-            layerPromises.push(p);
-        }
-
-        return $q.all(layerPromises).then(() => {
-            const promises = [];
-            for (const report of bundle.reports) {
-                const p = getReport(report._id).then(r => {
-                    if (r) {
-                        messages.push('Report exists in database: ' + r.reportName);
-                        return;
-                    }
-
-                    return importReport(report, datasourceRef).then(r => {
-                        updated.push(r);
-                    });
-                });
-                promises.push(p);
-            }
-
-            for (const dashboard of bundle.dashboards) {
-                const p = getDashboard(dashboard._id).then(d => {
-                    if (d) {
-                        messages.push('Dashboard already exists in database: ' + d.dashboardName);
-                        return;
-                    }
-
-                    return importDashboard(dashboard, datasourceRef).then(d => {
-                        updated.push(d);
-                    });
-                });
-                promises.push(p);
-            }
-
-            return $q.all(promises).then(() => {
-                return {
-                    updated: updated,
-                    messages: messages,
-                };
-            });
-        });
-    };
-
     this.importBundle = function (bundle, datasourceRef) {
         const additions = [];
         const messages = [];
+        const replace = [];
 
         const layerPromises = [];
         for (const layer of bundle.layers) {
             const p = getLayer(layer._id).then(l => {
                 if (l) {
-                    messages.push('Layer was not imported because it already exists in database: ' + l.name);
-                    return;
+                    if (layer.replace === true) {
+                        messages.push('This Layer was replace: ' + l.name);
+                        return replace.push(l);
+                    } else {
+                        messages.push('Layer was not imported because it already exists in database: ' + l.name);
+                        return;
+                    }
                 }
 
                 return importLayer(layer, datasourceRef).then(l => {
@@ -220,6 +167,10 @@ angular.module('app').service('ioModel', function (connection, $q) {
             for (const report of bundle.reports) {
                 const p = getReport(report._id).then(r => {
                     if (r) {
+                        if (report.replace === true) {
+                            messages.push('This Report was replace: ' + r.reportName);
+                            return replace.push(r);
+                        }
                         messages.push('Report was not imported because it already exists in database: ' + r.reportName);
                         return;
                     }
@@ -234,6 +185,10 @@ angular.module('app').service('ioModel', function (connection, $q) {
             for (const dashboard of bundle.dashboards) {
                 const p = getDashboard(dashboard._id).then(d => {
                     if (d) {
+                        if (dashboard.replace === true) {
+                            messages.push('This Dashboard was replace: ' + d.dashboardName);
+                            return replace.push(d);
+                        }
                         messages.push('Dashboard was not imported because it already exists in database: ' + d.dashboardName);
                         return;
                     }
@@ -249,6 +204,7 @@ angular.module('app').service('ioModel', function (connection, $q) {
                 return {
                     additions: additions,
                     messages: messages,
+                    replace: replace,
                 };
             });
         });
@@ -296,5 +252,17 @@ angular.module('app').service('ioModel', function (connection, $q) {
         };
 
         return connection.get('/api/dashboardsv2/find-all', params).then(r => r.items);
+    };
+
+    this.replaceLayer = function (layer) {
+        return connection.post('/api/layers/update/', layer._id, layer).then(l => l.item);
+    };
+
+    this.replaceReport = function (report) {
+        return connection.post('/api/report/update/', report._id, report).then(r => r.item);
+    };
+
+    this.replaceDashboard = function (dashboard) {
+        return connection.post('/api/dashboardsv2/update/', dashboard._id, dashboard).then(d => d.item);
     };
 });
