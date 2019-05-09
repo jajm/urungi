@@ -1917,17 +1917,21 @@ img.img-cirlce {
     height: 27px;
 }
 
-#dropdownExport1, #dropdownExport2, #dropdownExport3 {
-  background-color: #eeeeee;
-  list-style: none;
+#dropdownExport1,
+#dropdownExport2,
+#dropdownExport3 {
+    background-color: #eee;
+    list-style: none;
 }
 
-#details1, #details2, #details3 {
-  background-color: #eeeeee;
-  display: flex;
-  margin-bottom: 15px;
-  margin-top: 20px;
-  border-bottom: 1px solid #000000;
+#details1,
+#details2,
+#details3 {
+    background-color: #eee;
+    display: flex;
+    margin-bottom: 15px;
+    margin-top: 20px;
+    border-bottom: 1px solid #000;
 }
 
 .dropdown-submenu {
