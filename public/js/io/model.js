@@ -148,7 +148,9 @@ angular.module('app').service('ioModel', function (connection, $q) {
                 if (l) {
                     if (layer.replace === true) {
                         messages.push('This Layer was replace: ' + l.name);
-                        return replace.push(l);
+                        return this.replaceLayer(layer).then(l => {
+                            replace.push(l);
+                        });
                     } else {
                         messages.push('Layer was not imported because it already exists in database: ' + l.name);
                         return;
@@ -169,7 +171,9 @@ angular.module('app').service('ioModel', function (connection, $q) {
                     if (r) {
                         if (report.replace === true) {
                             messages.push('This Report was replace: ' + r.reportName);
-                            return replace.push(r);
+                            return this.replaceReport(report).then(r => {
+                                replace.push(r);
+                            });
                         }
                         messages.push('Report was not imported because it already exists in database: ' + r.reportName);
                         return;
@@ -187,7 +191,9 @@ angular.module('app').service('ioModel', function (connection, $q) {
                     if (d) {
                         if (dashboard.replace === true) {
                             messages.push('This Dashboard was replace: ' + d.dashboardName);
-                            return replace.push(d);
+                            return this.replaceDashboard(dashboard).then(d => {
+                                replace.push(d);
+                            });
                         }
                         messages.push('Dashboard was not imported because it already exists in database: ' + d.dashboardName);
                         return;
@@ -255,14 +261,14 @@ angular.module('app').service('ioModel', function (connection, $q) {
     };
 
     this.replaceLayer = function (layer) {
-        return connection.post('/api/layers/update/', layer._id, layer).then(l => l.item);
+        return connection.post('/api/layers/update/' + layer._id, layer).then(l => l.item);
     };
 
     this.replaceReport = function (report) {
-        return connection.post('/api/report/update/', report._id, report).then(r => r.item);
+        return connection.post('/api/reports/update/' + report._id, report).then(r => r.item);
     };
 
     this.replaceDashboard = function (dashboard) {
-        return connection.post('/api/dashboardsv2/update/', dashboard._id, dashboard).then(d => d.item);
+        return connection.post('/api/dashboardsv2/update/' + dashboard._id, dashboard).then(d => d.item);
     };
 });
