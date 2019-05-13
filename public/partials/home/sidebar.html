@@ -33,17 +33,17 @@
     <a id="usersMainMenu" ng-show="isWSTADMIN" href="/#/users" class="list-group-item">
         <i class="fa fa-user"></i> <span translate>&nbsp;Users  </span><span class="badge">{{counts.users}}</span>
     </a>
-    <a id="usersMainMenu" ng-show="isWSTADMIN" href="/#/import" class="list-group-item">
-        <i class="fa fa-download"></i> <span translate>&nbsp;Import  </span><span class="badge">{{counts.users}}</span>
+    <a id="usersImport" ng-show="isWSTADMIN" href="/#/import" class="list-group-item">
+        <i class="fa fa-download"></i> &nbsp;<span translate>Import </span><span class="badge">{{counts.users}}</span>
     </a>
-    <a id="usersMainMenu" ng-show="isWSTADMIN" href="/#/export" class="list-group-item">
-        <i class="fa fa-upload"></i> <span translate>&nbsp;Export  </span><span class="badge">{{counts.users}}</span>
+    <a id="usersExport" ng-show="isWSTADMIN" href="/#/export" class="list-group-item">
+        <i class="fa fa-upload"></i> &nbsp; <span translate>Export </span><span class="badge">{{counts.users}}</span>
     </a>
     <a ng-if="!getUserContextHelp('homeIndex')" class="list-group-item admin-menu" ng-click="showIntro()">
         <i class="fa fa-map"></i> <span translate>Guided tour</span>
     </a>
     <a id="aboutMenu" href="/#/about" class="list-group-item">
-        <i class="fa fa-question-circle"></i> <span translate>About</span>
+        <i class="fa fa-question-circle"></i>&nbsp; <span translate>About</span>
     </a>
     <span class="list-group-item main-menu-logo" >
         <img src="images/urungi.png" class="img-responsive">
