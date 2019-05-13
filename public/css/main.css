@@ -1917,17 +1917,13 @@ img.img-cirlce {
     height: 27px;
 }
 
-#dropdownExport1,
-#dropdownExport2,
-#dropdownExport3 {
+.dropdownExport {
     background-color: #eee;
     list-style: none;
 }
 
-#details1,
-#details2,
-#details3 {
-    background-color: #eee;
+.details {
+    background-color: #f5f5f5;
     display: flex;
     margin-bottom: 15px;
     margin-top: 20px;
