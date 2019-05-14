@@ -50,6 +50,10 @@ a:focus {
     font-weight: bold;
 }
 
+.layerButton {
+    max-width: 113px;
+}
+
 .logo {
     width: 500px;
 }
