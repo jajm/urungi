@@ -1,4 +1,4 @@
-angular.module('app').service('ioModel', function (connection, $q) {
+angular.module('app').service('ioModel', function (connection, $q, gettextCatalog) {
     function exportDatasource (datasourceID) {
         return connection.get('/api/data-sources/find-one', { id: datasourceID })
             .then(response => response.item);
@@ -147,13 +147,14 @@ angular.module('app').service('ioModel', function (connection, $q) {
             const p = getLayer(layer._id).then(l => {
                 if (l) {
                     if (layer.replace === true) {
-                        messages.push('This layer was replaced: ' + l.name);
+                        var msg = gettextCatalog.getString('This layer was replaced: ');
+                        messages.push(msg + l.name);
                         return this.replaceLayer(layer).then(function () {
                             replace.push(layer);
-                            console.log(replace);
                         });
                     } else {
-                        messages.push('Layer was not imported because it already exists in database: ' + l.name);
+                        msg = gettextCatalog.getString('Layer was not imported because it already exists in database: ');
+                        messages.push(msg + l.name);
                         return;
                     }
                 }
@@ -171,12 +172,14 @@ angular.module('app').service('ioModel', function (connection, $q) {
                 const p = getReport(report._id).then(r => {
                     if (r) {
                         if (report.replace === true) {
-                            messages.push('This report was replaced: ' + r.reportName);
+                            var msg = gettextCatalog.getString('This report was replaced: ');
+                            messages.push(msg + r.reportName);
                             return this.replaceReport(report).then(function () {
                                 replace.push(report);
                             });
                         }
-                        messages.push('Report was not imported because it already exists in database: ' + r.reportName);
+                        msg = gettextCatalog.getString('Report was not imported because it already exists in database: ');
+                        messages.push(msg + r.reportName);
                         return;
                     }
 
@@ -191,12 +194,14 @@ angular.module('app').service('ioModel', function (connection, $q) {
                 const p = getDashboard(dashboard._id).then(d => {
                     if (d) {
                         if (dashboard.replace === true) {
-                            messages.push('This dashboard was replaced: ' + d.dashboardName);
+                            var msg = gettextCatalog.getString('This dashboard was replaced: ');
+                            messages.push(msg + d.dashboardName);
                             return this.replaceDashboard(dashboard).then(function () {
                                 replace.push(dashboard);
                             });
                         }
-                        messages.push('Dashboard was not imported because it already exists in database: ' + d.dashboardName);
+                        msg = gettextCatalog.getString('Dashboard was not imported because it already exists in database: ');
+                        messages.push(msg + d.dashboardName);
                         return;
                     }
 
