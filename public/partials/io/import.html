@@ -49,9 +49,9 @@
     </span>
 
     <span ng-if="state === 2">
-        <h4>Please associate the imported data sources to the local ones</h4>
         <div class="row">
             <div class="col-md-3">
+              <h4>Please associate the imported data sources to the local ones :</h4>
                 <h5>Imported data sources</h5>
                 <ul>
                     <li ng-repeat="dts in importFile.datasources">
@@ -70,6 +70,7 @@
                 <button ng-click="cancelImport()">cancel</button>
 
             </div>
+            <h4>Select files to update :</h4>
             <div class="col-md-3">
                 <h5>Existing Layers</h5>
                 <ul>
