@@ -137,13 +137,15 @@
         </div>
 
         <div ng-if="messages.length">
-            <h5>Messages</h5>
-            <ul>
-                <li ng-repeat="message in messages">
-                    {{ message }}
-                </li>
-            </ul>
-        </div>
+            <details class="details">
+                <summary>Messages (Log)</summary>
+
+                <ul class="dropdownImport">
+                    <li ng-repeat="message in messages">
+                        {{ message }}
+                    </li>
+                </ul>
+            </details>
 
         <button ng-click="initImport()">Import new file</button>
         <a class="button" href="/#/home">Back to main page</a>
