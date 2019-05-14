@@ -31,6 +31,7 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
     $scope.isForDash = false;
 
     $scope.selectedRecordLimit = { value: 500 };
+    $scope.selectedGaugeMax = { value: 100 };
 
     $scope.rootItem = {};
 
@@ -391,6 +392,11 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
         });
     };
 
+    $scope.$on('repaint', function (event, args) {
+        $scope.selectedReport.properties.maxValue = $scope.selectedGaugeMax.value;
+        console.log($scope.selectedReport.properties.maxValue);
+    });
+
     $scope.generateQuery = function () {
         var query = {};
 
@@ -699,6 +705,7 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
 
     $scope.changeReportType = function (newReportType) {
         const report = $scope.selectedReport;
+
         if (report.query) {
             report.query.countYKeys = false;
         }
@@ -796,7 +803,6 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
             if (!report.properties.strokeColor) { report.properties.strokeColor = '#E0E0E0'; } // to see which ones work best for you
             if (!report.properties.generateGradient) { report.properties.generateGradient = true; }
             if (!report.properties.minValue) { report.properties.minValue = 0; }
-            if (!report.properties.maxValue) { report.properties.maxValue = 100; }
             if (!report.properties.animationSpeed) { report.properties.animationSpeed = 32; }
             break;
 

@@ -194,7 +194,10 @@ angular.module('app').service('c3Charts', function () {
                 columns: [
                     [theValues[0], query.data[0][theValues[0]]]
                 ],
-                type: chart.type
+                type: chart.type,
+            };
+            c3Config.gauge = {
+                max: report.properties.maxValue,
             };
             break;
 
