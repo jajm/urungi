@@ -124,12 +124,16 @@
             No new item has been created.
         </div>
 
-        <div ng-if="created.length">
+        <h5>Items updated</h5>
+        <div ng-if="replace.length">
             <ul>
-                <li ng-repeat="item in updated">
-                    {{item.item.name || item.item.reportName || item.item.dashboardName}}
+                <li ng-repeat="item in replace">
+                    {{item.name || item.reportName || item.dashboardName}}
                 </li>
             </ul>
+        </div>
+        <div ng-if="!replace.length">
+            No item has been updated.
         </div>
 
         <div ng-if="messages.length">

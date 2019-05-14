@@ -147,9 +147,10 @@ angular.module('app').service('ioModel', function (connection, $q) {
             const p = getLayer(layer._id).then(l => {
                 if (l) {
                     if (layer.replace === true) {
-                        messages.push('This Layer was replace: ' + l.name);
-                        return this.replaceLayer(layer).then(l => {
-                            replace.push(l);
+                        messages.push('This layer was replaced: ' + l.name);
+                        return this.replaceLayer(layer).then(function () {
+                            replace.push(layer);
+                            console.log(replace);
                         });
                     } else {
                         messages.push('Layer was not imported because it already exists in database: ' + l.name);
@@ -170,9 +171,9 @@ angular.module('app').service('ioModel', function (connection, $q) {
                 const p = getReport(report._id).then(r => {
                     if (r) {
                         if (report.replace === true) {
-                            messages.push('This Report was replace: ' + r.reportName);
-                            return this.replaceReport(report).then(r => {
-                                replace.push(r);
+                            messages.push('This report was replaced: ' + r.reportName);
+                            return this.replaceReport(report).then(function () {
+                                replace.push(report);
                             });
                         }
                         messages.push('Report was not imported because it already exists in database: ' + r.reportName);
@@ -190,9 +191,9 @@ angular.module('app').service('ioModel', function (connection, $q) {
                 const p = getDashboard(dashboard._id).then(d => {
                     if (d) {
                         if (dashboard.replace === true) {
-                            messages.push('This Dashboard was replace: ' + d.dashboardName);
-                            return this.replaceDashboard(dashboard).then(d => {
-                                replace.push(d);
+                            messages.push('This dashboard was replaced: ' + d.dashboardName);
+                            return this.replaceDashboard(dashboard).then(function () {
+                                replace.push(dashboard);
                             });
                         }
                         messages.push('Dashboard was not imported because it already exists in database: ' + d.dashboardName);
