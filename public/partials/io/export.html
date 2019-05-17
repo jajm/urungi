@@ -7,52 +7,82 @@
         <div class="container-fluid branded-border-panel">
             <h3>Export layers, reports and dashboards </h3>
         </div>
-        <details class="details">
-            <summary>Layers</summary>
 
-            <ul class="dropdownExport">
-                <li ng-repeat="layer in layers">
-                    <div>
-                        <input type="checkbox" ng-model="layer.checked">
-                        <span> {{layer.name}}</span>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <details class="details" open>
+                        <summary>Layers</summary>
+
+                        <div class="dropdownExport">
+                            <div class="checkbox" ng-repeat="layer in layers">
+                                <label>
+                                    <input type="checkbox" ng-model="layer.checked">
+                                    {{layer.name}}
+                                </label>
+                            </div>
+                            <p class="help-block">
+                                Required Layers for chosen reports and dashboards will be included automatically, there is no need to include them manually.
+                            </p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <details class="details" open>
+                        <summary>Reports</summary>
+
+                        <div class="dropdownExport">
+                            <div class="checkbox" ng-repeat="report in reports">
+                                <label>
+                                    <input type="checkbox" ng-model="report.checked">
+                                    {{report.reportName}}
+                                </label>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <details class="details" open>
+                        <summary>Dashboards</summary>
+
+                        <div class="dropdownExport">
+                            <div class="checkbox" ng-repeat="dashboard in dashboards">
+                                <label>
+                                    <input type="checkbox" ng-model="dashboard.checked">
+                                    {{dashboard.dashboardName}}
+                                </label>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" ng-model="exportName">
+                        <span class="input-group-addon">.json</span>
                     </div>
-                </li>
-            </ul>
-        </details>
-        <i>Required Layers for chosen reports and dashboards will be included automatically, there is no need to include them manually.</i>
-        <br>
+                </div>
+            </div>
+        </div>
 
-        <details class="details">
-            <summary>Reports</summary>
-
-            <ul class="dropdownExport">
-                <li ng-repeat="report in reports">
-                    <div>
-                        <input type="checkbox" ng-model="report.checked">
-                        <span> {{report.reportName}}</span>
-                    </div>
-                </li>
-            </ul>
-        </details>
-
-        <details class="details">
-            <summary>Dashboards</summary>
-
-            <ul class="dropdownExport">
-                <li ng-repeat="dashboard in dashboards">
-                    <div>
-                        <input type="checkbox" ng-model="dashboard.checked">
-                        <span> {{dashboard.dashboardName}}</span>
-                    </div>
-                </li>
-            </ul>
-        </details>
-
-        <input type="text" ng-model="exportName">
-            .json
-        <br>
-        <button class="btn btn-success" ng-click="downloadExport()">export</button>
-        <br>
-        <a class="btn btn-default" href="/#/home">back</a>
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-success" ng-click="downloadExport()" translate>Export</button>
+            </div>
+        </div>
     </div>
 </div>
