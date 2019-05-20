@@ -90,6 +90,10 @@ angular.module('app').controller('dashBoardv2Ctrl', function ($scope, $location,
         $scope.$broadcast('newReportForDash', {});
     };
 
+    $scope.Redraw = function () {
+        repaintReports();
+    };
+
     $scope.importReport = function () {
         $('#reportImportModal').modal('show');
     };
@@ -179,6 +183,8 @@ angular.module('app').controller('dashBoardv2Ctrl', function ($scope, $location,
         };
 
         if ($scope.mode === 'edit') {
+            $scope.selectedDashboardLimit = { value: 500 };
+
             if (!$scope.dashboardID) {
                 noty({ text: 'Could not load dashboard : missing id', type: 'error', timeout: 4000 });
             }
