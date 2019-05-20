@@ -51,8 +51,9 @@
     <span ng-if="state === 2">
         <div class="row">
             <div class="col-md-3">
-              <h4>Please associate the imported data sources to the local ones :</h4>
-                <h5>Imported data sources</h5>
+              <h4>Please associate the imported data sources to the local ones:</h4>
+              <br>
+                <h5>Imported data sources:</h5>
                 <ul>
                     <li ng-repeat="dts in importFile.datasources">
                         <div>
@@ -70,9 +71,11 @@
                 <button ng-click="cancelImport()">cancel</button>
 
             </div>
-            <h4>Select files to update :</h4>
+            <h4>The following elements already exist. Please select the ones you want to overwrite. The others will not be imported:</h4>
+            <br>
             <div class="col-md-3">
-                <h5>Existing Layers</h5>
+                <h5>Existing Layers:</h5>
+                <br>
                 <ul>
                     <li ng-repeat="item in importFile.layers">
                         <div>
@@ -84,7 +87,8 @@
 
             </div>
             <div class="col-md-3">
-                <h5>Existing Reports</h5>
+                <h5>Existing Reports:</h5>
+                <br>
                 <ul>
                     <li ng-repeat="item in importFile.reports">
                         <div>
@@ -96,7 +100,8 @@
 
             </div>
             <div class="col-md-3">
-                <h5>Existing Dashboards</h5>
+                <h5>Existing Dashboards:</h5>
+                <br>
                 <ul>
                     <li ng-repeat="item in importFile.dashboards">
                         <div>
