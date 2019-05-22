@@ -8,7 +8,6 @@ angular.module('app').service('c3Charts', function () {
         var theNames = {};
         var theGroups = [];
         var theData = [];
-
         var query = report.query;
         var chart = report.properties.chart;
 
