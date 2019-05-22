@@ -50,8 +50,20 @@ a:focus {
     font-weight: bold;
 }
 
+.layerNewButtonDropdown {
+    background-color: #3f4652;
+}
+
+#layerButtonGroup {
+    margin-left: 35px;
+}
+
+#LayerNewButton {
+    width: 150px;
+}
+
 .layerButton {
-    max-width: 113px;
+    margin-left: 20px;
 }
 
 .logo {
