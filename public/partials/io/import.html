@@ -75,43 +75,32 @@
             <br>
             <div class="col-md-3">
                 <h5 translate>Existing Layers:</h5>
-                <br>
-                <ul>
-                    <li ng-repeat="item in importFile.layers">
-                        <div>
-                            <input type="checkbox" ng-model="item.replace" ng-value="boolean">
-                            {{item.name}}
-                        </div>
-                    </li>
-                </ul>
 
+                <div class="checkbox" ng-repeat="item in importFile.layers">
+                    <label>
+                        <input type="checkbox" ng-model="item.replace">
+                        {{item.name}}
+                    </label>
+                </div>
             </div>
             <div class="col-md-3">
                 <h5 translate>Existing Reports:</h5>
-                <br>
-                <ul>
-                    <li ng-repeat="item in importFile.reports">
-                        <div>
-                            <input type="checkbox" ng-model="item.replace">
-                            {{item.reportName}}
-                        </div>
-                    </li>
-                </ul>
 
+                <div class="checkbox" ng-repeat="item in importFile.reports">
+                    <label>
+                        <input type="checkbox" ng-model="item.replace">
+                        {{item.reportName}}
+                    </label>
+                </div>
             </div>
             <div class="col-md-3">
                 <h5 translate>Existing Dashboards:</h5>
-                <br>
-                <ul>
-                    <li ng-repeat="item in importFile.dashboards">
-
-                        <div>
-                            <input type="checkbox" ng-model="item.replace"  ng-value="boolean">
-                            {{item.dashboardName}}
-                        </div>
-                    </li>
-                </ul>
-
+                <div class="checkbox" ng-repeat="item in importFile.dashboards">
+                    <label>
+                        <input type="checkbox" ng-model="item.replace">
+                        {{item.dashboardName}}
+                    </label>
+                </div>
             </div>
         </div>
     </span>
