@@ -79,9 +79,9 @@
                 <ul>
                     <li ng-repeat="item in importFile.layers">
                         <div>
+                            <input type="checkbox" ng-model="item.replace" ng-value="boolean">
                             {{item.name}}
                         </div>
-                        <input type="checkbox" ng-model="item.replace" ng-value="boolean">
                     </li>
                 </ul>
 
@@ -92,9 +92,9 @@
                 <ul>
                     <li ng-repeat="item in importFile.reports">
                         <div>
+                            <input type="checkbox" ng-model="item.replace">
                             {{item.reportName}}
                         </div>
-                          <input type="checkbox" ng-model="item.replace">
                     </li>
                 </ul>
 
@@ -104,10 +104,11 @@
                 <br>
                 <ul>
                     <li ng-repeat="item in importFile.dashboards">
+
                         <div>
+                            <input type="checkbox" ng-model="item.replace"  ng-value="boolean">
                             {{item.dashboardName}}
                         </div>
-                        <input type="checkbox" ng-model="item.replace"  ng-value="boolean">
                     </li>
                 </ul>
 
@@ -144,7 +145,7 @@
 
         <div ng-if="messages.length">
             <details class="details">
-                <summary>Messages (Log)</summary>
+                <summary translate>Messages (Log)</summary>
 
                 <ul class="dropdownImport">
                     <li ng-repeat="message in messages">
