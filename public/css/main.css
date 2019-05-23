@@ -56,12 +56,12 @@ a:focus {
 
 #layerButtonGroup > .dropdown-menu > li > a {
     background-color: #666;
-    color:#fff;
+    color: #fff;
 }
 
 #layerButtonGroup > .dropdown-menu > li > a:hover {
     background-color: #204d74;
-    color:#fff;
+    color: #fff;
 }
 
 .logo {
