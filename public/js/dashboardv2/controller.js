@@ -221,10 +221,6 @@ angular.module('app').controller('dashBoardv2Ctrl', function ($scope, $location,
         }
     };
 
-    $scope.Redraw = function () {
-        repaintReports();
-    };
-
     $scope.showOverlay = function (referenceId) {
         bsLoadingOverlayService.start({
             referenceId: referenceId
