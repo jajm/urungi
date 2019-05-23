@@ -63,12 +63,17 @@ exports.ReportsFindAll = async function (req, res) {
             pipeline.push({ $limit: result.params.limit });
         }
 
+        const collationSpec = {
+            locale: 'en',
+            strength: 2,
+        };
+
         const countPipeline = commonPipeline.slice();
         countPipeline.push({ $count: 'totalCount' });
 
         const countDocs = await Reports.aggregate(countPipeline);
         const count = countDocs.length ? countDocs[0].totalCount : 0;
-        const reports = await Reports.aggregate(pipeline);
+        const reports = await Reports.aggregate(pipeline).collation(collationSpec);
 
         response = {
             result: 1,

@@ -11,14 +11,61 @@ class Dashboardsv2Controller extends Controller {
 
 var controller = new Dashboardsv2Controller();
 
-exports.Dashboardsv2FindAll = function (req, res) {
+exports.Dashboardsv2FindAll = async function (req, res) {
     req.query.trash = true;
     req.query.companyid = true;
     req.user = {};
     req.user.companyID = 'COMPID';
-    controller.findAll(req).then(function (result) {
-        res.status(200).json(result);
-    });
+    var perPage = config.get('pagination.itemsPerPage');
+    var page = (req.query.page) ? req.query.page : 1;
+    var result = controller.findAllParams(req);
+    let response;
+
+    const commonPipeline = [
+        {
+            $match: result.find,
+        },
+    ];
+
+    const pipeline = commonPipeline.slice();
+
+    if (result.fields && Object.keys(result.fields).length > 0) {
+        result.fields.layer = 1;
+        pipeline.push({ $project: result.fields });
+    }
+
+    if (result.params.sort && Object.keys(result.params.sort).length > 0) {
+        pipeline.push({ $sort: result.params.sort });
+    }
+
+    if (result.params.skip) {
+        pipeline.push({ $skip: result.params.skip });
+    }
+
+    if (result.params.limit) {
+        pipeline.push({ $limit: result.params.limit });
+    }
+
+    const collationSpec = {
+        locale: 'en',
+        strength: 2,
+    };
+
+    const countPipeline = commonPipeline.slice();
+    countPipeline.push({ $count: 'totalCount' });
+
+    const countDocs = await Dashboardsv2.aggregate(countPipeline);
+    const count = countDocs.length ? countDocs[0].totalCount : 0;
+    const dashboardsv2 = await Dashboardsv2.aggregate(pipeline).collation(collationSpec);
+
+    response = {
+        result: 1,
+        page: page,
+        pages: req.query.page ? Math.ceil(count / perPage) : 1,
+        items: dashboardsv2,
+    };
+
+    res.status(200).json(response);
 };
 
 exports.Dashboardsv2FindOne = function (req, res) {
