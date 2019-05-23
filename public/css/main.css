@@ -51,19 +51,17 @@ a:focus {
 }
 
 .layerNewButtonDropdown {
-    background-color: #3f4652;
+    background-color: #666;
 }
 
-#layerButtonGroup {
-    margin-left: 35px;
+#layerButtonGroup > .dropdown-menu > li > a {
+    background-color: #666;
+    color:#fff;
 }
 
-#LayerNewButton {
-    width: 150px;
-}
-
-.layerButton {
-    margin-left: 20px;
+#layerButtonGroup > .dropdown-menu > li > a:hover {
+    background-color: #204d74;
+    color:#fff;
 }
 
 .logo {
