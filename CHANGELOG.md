@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Date input for filters can be changed manually (without datetimepicker)
 - Update angular-ui-bootstrap to 2.5.6
+- Update angularjs-bootstrap-datetimepicker to 1.1.4
 
 ## [1.0.1] - 2019-05-03
 
