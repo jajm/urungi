@@ -10,9 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Ability to make reports and dashboards public
+- New icon set to be used in dashboards
+- Legend in custom layer element modal to know which columns correspond to the
+  cryptic IDs
 
 ### Changed
 
+- Session's secret is now configurable
 - Date input for filters can be changed manually (without datetimepicker)
 - Move all "menu-list" code into several independent AngularJS components
 - Use $uibModal and its component option to make it easier to reuse modals
@@ -20,6 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use uib-tabset everywhere we have tabs for consistency
 - Update angular-ui-bootstrap to 2.5.6
 - Update angularjs-bootstrap-datetimepicker to 1.1.4
+- Browser's sessionStorage is not used anymore for user data
+
+### Fixed
+
+- A compatibility issues between the jQuery plugin for pivot table and the
+  recently upgraded jQuery 3
+- Remove import error messages that were false positives
+- A lot of minor issues raised by LGTM
 
 ## [1.0.1] - 2019-05-03
 
