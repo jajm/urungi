@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Date input for filters can be changed manually (without datetimepicker)
+- Move all "menu-list" code into several independent AngularJS components
+- Use $uibModal and its component option to make it easier to reuse modals
+- Cache all template files
+- Use uib-tabset everywhere we have tabs for consistency
 - Update angular-ui-bootstrap to 2.5.6
 - Update angularjs-bootstrap-datetimepicker to 1.1.4
 
