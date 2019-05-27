@@ -1,0 +1,27 @@
+{
+  "addons": [
+    "jawsdb",
+    "mongolab"
+  ],
+  "buildpacks": [
+
+  ],
+  "description": "",
+  "env": {
+    "JAWSDB_URL": {
+      "required": true
+    },
+    "MONGODB_URI": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "name": "urungi",
+  "scripts": {
+  },
+  "stack": "container"
+}
