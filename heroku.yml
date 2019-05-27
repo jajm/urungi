@@ -1,0 +1,6 @@
+setup:
+    addons:
+        - plan: mongolab
+build:
+    docker:
+        web: Dockerfile
