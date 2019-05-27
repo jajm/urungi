@@ -1,7 +1,13 @@
 {
   "addons": [
-    "jawsdb",
-    "mongolab"
+    {
+      "plan": "jawsdb",
+      "as": "JAWSDB"
+    },
+    {
+      "plan": "mongolab",
+      "as": "MONGODB"
+    }
   ],
   "buildpacks": [
 
