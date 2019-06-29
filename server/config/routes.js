@@ -9,7 +9,8 @@ module.exports = function (app, passport) {
     });
 
     app.get('/login', function (req, res, next) {
-        res.cookie('XSRF-TOKEN', req.csrfToken());
+        const token = req.csrfToken();
+        res.cookie('XSRF-TOKEN', token);
         res.render('login');
     });
 

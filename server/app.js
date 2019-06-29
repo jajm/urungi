@@ -68,20 +68,20 @@ if (authentication) {
 
 global.config = config;
 
-require('./server/config/mongoose')();
-require('./server/config/passport')(passport);
+require('./config/mongoose')();
+require('./config/passport')(passport);
 
-require('./server/globals');
-require('./server/config/mailer');
+require('./globals');
+require('./config/mailer');
 
-require('./server/config/routes')(app, passport);
+require('./config/routes')(app, passport);
 
 var fs = require('fs');
 
 app.use('/uploads', restrict, express.static(path.join(__dirname, 'uploads')));
 
 // Custom routes
-var routes_dir = path.join(__dirname, 'server', 'custom');
+var routes_dir = path.join(__dirname, 'custom');
 fs.readdirSync(routes_dir).forEach(function (file) {
     if (file[0] === '.') return;
     require(routes_dir + '/' + file + '/routes.js')(app);

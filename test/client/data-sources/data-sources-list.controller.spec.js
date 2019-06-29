@@ -1,5 +1,5 @@
 describe('DataSourcesListController', function () {
-    beforeEach(module('app.data-sources'));
+    beforeEach(angular.mock.module('app.data-sources'));
 
     let $controller, $httpBackend;
     let vm;

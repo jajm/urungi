@@ -1,5 +1,5 @@
 describe('uuid', function () {
-    beforeEach(module('app.core'));
+    beforeEach(angular.mock.module('app.core'));
 
     // crypto is not implemented in jsdom so provides an alternative using
     // Math.random
