@@ -18,6 +18,7 @@ before_install:
     - mysql -e 'GRANT ALL ON urungi_tests.* TO urungi@localhost IDENTIFIED BY "urungi"'
     - psql -c 'create database urungi_tests;' -U postgres
     - npm i -g npm
-after_sucess:
+script: npm test -- --coverage
+after_success:
     - npx codecov
 cache: npm
