@@ -18,6 +18,6 @@ before_install:
     - mysql -e 'GRANT ALL ON urungi_tests.* TO urungi@localhost IDENTIFIED BY "urungi"'
     - psql -c 'create database urungi_tests;' -U postgres
     - npm i -g npm
-before_script:
-    - npx migrate-mongo up
+after_sucess:
+    - npx codecov
 cache: npm
