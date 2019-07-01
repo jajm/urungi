@@ -35,8 +35,10 @@ describe('Login API', function () {
         describe('with invalid credentials', () => {
             it('should return status 401', async function () {
                 const res = await agent.get('/login');
-                const cookiesString = res.headers['set-cookie'][0];
-                const setCookieHeader = setCookieParser.splitCookiesString(cookiesString);
+                let setCookieHeader = res.headers['set-cookie'];
+                if (setCookieHeader.length === 1) {
+                    setCookieHeader = setCookieParser.splitCookiesString(setCookieHeader[0]);
+                }
                 const cookies = setCookieParser.parse(setCookieHeader, { map: true });
                 const cookie = Object.values(cookies).map(c => c.name + '=' + c.value).join('; ');
                 const xsrfToken = cookies['XSRF-TOKEN'].value;
@@ -50,8 +52,10 @@ describe('Login API', function () {
         describe('with valid credentials', () => {
             it('should return a user object', async function () {
                 let res = await request(app).get('/login');
-                const cookiesString = res.headers['set-cookie'][0];
-                const setCookieHeader = setCookieParser.splitCookiesString(cookiesString);
+                let setCookieHeader = res.headers['set-cookie'];
+                if (setCookieHeader.length === 1) {
+                    setCookieHeader = setCookieParser.splitCookiesString(setCookieHeader[0]);
+                }
                 const cookies = setCookieParser.parse(setCookieHeader, { map: true });
                 const cookie = Object.values(cookies).map(c => c.name + '=' + c.value).join('; ');
                 const xsrfToken = cookies['XSRF-TOKEN'].value;
