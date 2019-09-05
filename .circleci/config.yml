@@ -9,7 +9,7 @@ jobs:
       MONGOMS_VERSION: 3.4.22
     docker:
       # https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/node:8
+      - image: circleci/node:8-jessie
       - image: circleci/mariadb:10.3
         environment:
           MYSQL_DATABASE: urungi_tests
