@@ -1,50 +1,139 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2
 jobs:
   node-8-mongo-3.4:
-    environment:
-      MONGOMS_VERSION: 3.4.22
     docker:
-      # https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/node:8-jessie
       - image: circleci/mariadb:10.3
-        environment:
+        environment: &mysql_environment
           MYSQL_DATABASE: urungi_tests
           MYSQL_USER: urungi
           MYSQL_PASSWORD: urungi
       - image: circleci/postgres:9.6
-        environment:
+        environment: &postgres_environment
           POSTGRES_USER: postgres
           POSTGRES_DB: urungi_tests
-
     working_directory: ~/urungi
-
+    environment:
+      MONGOMS_VERSION: 3.4.22
     steps:
       - checkout
       - run: npm ci
       - run: npm test
 
   node-8-mongo-3.6:
-    environment:
-      MONGOMS_VERSION: 3.6.14
     docker:
-      # https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/node:8
       - image: circleci/mariadb:10.3
         environment:
-          MYSQL_DATABASE: urungi_tests
-          MYSQL_USER: urungi
-          MYSQL_PASSWORD: urungi
+          <<: *mysql_environment
       - image: circleci/postgres:9.6
         environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: urungi_tests
-
+          <<: *postgres_environment
     working_directory: ~/urungi
+    environment:
+      MONGOMS_VERSION: 3.6.14
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm test
 
+  node-8-mongo-4.0:
+    docker:
+      - image: circleci/node:8
+      - image: circleci/mariadb:10.3
+        environment:
+          <<: *mysql_environment
+      - image: circleci/postgres:9.6
+        environment:
+          <<: *postgres_environment
+    working_directory: ~/urungi
+    environment:
+      MONGOMS_VERSION: 4.0.12
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm test
+
+  node-8-mongo-4.2:
+    docker:
+      - image: circleci/node:8
+      - image: circleci/mariadb:10.3
+        environment:
+          <<: *mysql_environment
+      - image: circleci/postgres:9.6
+        environment:
+          <<: *postgres_environment
+    working_directory: ~/urungi
+    environment:
+      MONGOMS_VERSION: 4.2.0
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm test
+
+  node-10-mongo-3.4:
+    docker:
+      - image: circleci/node:10-jessie
+      - image: circleci/mariadb:10.3
+        environment:
+          <<: *mysql_environment
+      - image: circleci/postgres:9.6
+        environment:
+          <<: *postgres_environment
+    working_directory: ~/urungi
+    environment:
+      MONGOMS_VERSION: 3.4.22
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm test
+
+  node-10-mongo-3.6:
+    docker:
+      - image: circleci/node:10
+      - image: circleci/mariadb:10.3
+        environment:
+          <<: *mysql_environment
+      - image: circleci/postgres:9.6
+        environment:
+          <<: *postgres_environment
+    working_directory: ~/urungi
+    environment:
+      MONGOMS_VERSION: 3.6.14
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm test
+
+  node-10-mongo-4.0:
+    docker:
+      - image: circleci/node:10
+      - image: circleci/mariadb:10.3
+        environment:
+          <<: *mysql_environment
+      - image: circleci/postgres:9.6
+        environment:
+          <<: *postgres_environment
+    working_directory: ~/urungi
+    environment:
+      MONGOMS_VERSION: 4.0.12
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm test
+
+  node-10-mongo-4.2:
+    docker:
+      - image: circleci/node:10
+      - image: circleci/mariadb:10.3
+        environment:
+          <<: *mysql_environment
+      - image: circleci/postgres:9.6
+        environment:
+          <<: *postgres_environment
+    working_directory: ~/urungi
+    environment:
+      MONGOMS_VERSION: 4.2.0
     steps:
       - checkout
       - run: npm ci
@@ -56,3 +145,9 @@ workflows:
     jobs:
       - node-8-mongo-3.4
       - node-8-mongo-3.6
+      - node-8-mongo-4.0
+      - node-8-mongo-4.2
+      - node-10-mongo-3.4
+      - node-10-mongo-3.6
+      - node-10-mongo-4.0
+      - node-10-mongo-4.2
