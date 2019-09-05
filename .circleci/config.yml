@@ -14,6 +14,10 @@ jobs:
           MYSQL_DATABASE: urungi_tests
           MYSQL_USER: urungi
           MYSQL_PASSWORD: urungi
+      - image: circleci/postgres:9.6
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: urungi_tests
 
     working_directory: ~/repo
 
