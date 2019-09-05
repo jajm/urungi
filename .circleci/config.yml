@@ -18,7 +18,8 @@ jobs:
     steps:
       - checkout
       - run: npm ci
-      - run: npm test
+      - run: npm test -- --coverage
+      - run: npx codecov
 
   node-8-mongo-3.6:
     docker:
@@ -35,7 +36,8 @@ jobs:
     steps:
       - checkout
       - run: npm ci
-      - run: npm test
+      - run: npm test -- --coverage
+      - run: npx codecov
 
   node-8-mongo-4.0:
     docker:
@@ -52,7 +54,8 @@ jobs:
     steps:
       - checkout
       - run: npm ci
-      - run: npm test
+      - run: npm test -- --coverage
+      - run: npx codecov
 
   node-8-mongo-4.2:
     docker:
@@ -69,7 +72,8 @@ jobs:
     steps:
       - checkout
       - run: npm ci
-      - run: npm test
+      - run: npm test -- --coverage
+      - run: npx codecov
 
   node-10-mongo-3.4:
     docker:
@@ -86,7 +90,8 @@ jobs:
     steps:
       - checkout
       - run: npm ci
-      - run: npm test
+      - run: npm test -- --coverage
+      - run: npx codecov
 
   node-10-mongo-3.6:
     docker:
@@ -103,7 +108,8 @@ jobs:
     steps:
       - checkout
       - run: npm ci
-      - run: npm test
+      - run: npm test -- --coverage
+      - run: npx codecov
 
   node-10-mongo-4.0:
     docker:
@@ -120,7 +126,8 @@ jobs:
     steps:
       - checkout
       - run: npm ci
-      - run: npm test
+      - run: npm test -- --coverage
+      - run: npx codecov
 
   node-10-mongo-4.2:
     docker:
@@ -137,7 +144,8 @@ jobs:
     steps:
       - checkout
       - run: npm ci
-      - run: npm test
+      - run: npm test -- --coverage
+      - run: npx codecov
 
 workflows:
   version: 2
