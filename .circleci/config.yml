@@ -4,11 +4,12 @@
 #
 version: 2
 jobs:
-  build:
+  node-8-mongo-3.4:
+    environment:
+      MONGOMS_VERSION: 3.4.22
     docker:
       # https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/node:8
-      - image: circleci/mongo:3.4
       - image: circleci/mariadb:10.3
         environment:
           MYSQL_DATABASE: urungi_tests
@@ -19,24 +20,39 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: urungi_tests
 
-    working_directory: ~/repo
+    working_directory: ~/urungi
 
     steps:
       - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run: npm install
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      # run tests!
+      - run: npm ci
       - run: npm test
+
+  node-8-mongo-3.6:
+    environment:
+      MONGOMS_VERSION: 3.6.14
+    docker:
+      # https://circleci.com/docs/2.0/circleci-images/
+      - image: circleci/node:8
+      - image: circleci/mariadb:10.3
+        environment:
+          MYSQL_DATABASE: urungi_tests
+          MYSQL_USER: urungi
+          MYSQL_PASSWORD: urungi
+      - image: circleci/postgres:9.6
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: urungi_tests
+
+    working_directory: ~/urungi
+
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm test
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - node-8-mongo-3.4
+      - node-8-mongo-3.6
