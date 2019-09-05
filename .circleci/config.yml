@@ -6,13 +6,14 @@ version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
+      # https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/node:8
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/mongo:3.4
+      - image: circleci/mariadb:10.3
+        environment:
+          MYSQL_DATABASE: urungi_tests
+          MYSQL_USER: urungi
+          MYSQL_PASSWORD: urungi
 
     working_directory: ~/repo
 
@@ -26,7 +27,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: npm ci
+      - run: npm install
 
       - save_cache:
           paths:
