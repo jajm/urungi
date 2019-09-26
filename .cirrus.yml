@@ -1,0 +1,26 @@
+container:
+  image: node:latest
+  additional_containers:
+    - name: mysql
+      image: mysql:latest
+      port: 3306
+      env:
+        MYSQL_ROOT_PASSWORD: secret
+        MYSQL_DATABASE: urungi_tests
+        MYSQL_USER: urungi
+        MYSQL_PASSWORD: urungi
+    - name: postgres
+      image: postgres:latest
+      port: 5432
+      env:
+        POSTGRES_DB: urungi_tests
+        POSTGRES_USER: urungi
+        POSTGRES_PASSWORD: urungi
+
+test_task:
+  node_modules_cache:
+    folder: node_modules
+    fingerprint_script: cat package-lock.json
+    populate_script: npm ci
+  before_script:
+  test_script: npm test

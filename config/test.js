@@ -28,7 +28,8 @@ module.exports = {
                 status: 1,
                 connection: {
                     host: 'localhost',
-                    userName: 'postgres',
+                    userName: 'urungi',
+                    password: 'urungi',
                     database: 'urungi_tests',
                 },
             },
