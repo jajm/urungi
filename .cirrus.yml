@@ -5,7 +5,9 @@ test_task:
       - image: node:10
     additional_containers:
       - name: mysql
-        image: mysql:5.7
+        matrix:
+          - image: mysql:5.6
+          - image: mysql:5.7
         port: 3306
         env:
           MYSQL_ROOT_PASSWORD: secret
@@ -13,14 +15,23 @@ test_task:
           MYSQL_USER: urungi
           MYSQL_PASSWORD: urungi
       - name: postgres
-        image: postgres:latest
+        matrix:
+          - image: postgres:9
+          - image: postgres:10
+          - image: postgres:11
         port: 5432
         env:
           POSTGRES_DB: urungi_tests
           POSTGRES_USER: urungi
           POSTGRES_PASSWORD: urungi
+  env:
+    matrix:
+      - MONGOMS_VERSION: 3.4.21
+      - MONGOMS_VERSION: 3.6.13
+      - MONGOMS_VERSION: 4.0.10
   node_modules_cache:
     folder: node_modules
     fingerprint_script: cat package-lock.json
     populate_script: npm ci
-  test_script: npm test
+  test_script: npm test -- --coverage
+  codecov_script: npx codecov
