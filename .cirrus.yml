@@ -1,5 +1,7 @@
 container:
-  image: node:10
+  matrix:
+    - image: node:8
+    - image: node:10
   additional_containers:
     - name: mysql
       image: mysql:5.7
@@ -22,5 +24,4 @@ test_task:
     folder: node_modules
     fingerprint_script: cat package-lock.json
     populate_script: npm ci
-  before_script:
   test_script: npm test
