@@ -2,7 +2,7 @@ container:
   image: node:10
   additional_containers:
     - name: mysql
-      image: mysql:latest
+      image: mysql:5.7
       port: 3306
       env:
         MYSQL_ROOT_PASSWORD: secret
