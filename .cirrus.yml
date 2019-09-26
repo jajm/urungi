@@ -1,5 +1,5 @@
 container:
-  image: node:latest
+  image: node:10
   additional_containers:
     - name: mysql
       image: mysql:latest
