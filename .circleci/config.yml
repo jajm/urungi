@@ -4,10 +4,10 @@ executors:
     parameters:
       node:
         type: string
-        default: 8
+        default: '8'
       mongodb:
         type: string
-        default: 3.4.22
+        default: '3.4.22'
     docker:
       - image: circleci/node:<< parameters.node >>
       - image: circleci/mariadb:10.3
@@ -41,40 +41,40 @@ workflows:
       - test:
           e:
             name: node
-            node: 8-jessie
-            mongodb: 3.4.22
+            node: '8-jessie'
+            mongodb: '3.4.22'
       - test:
           e:
             name: node
-            node: 8
-            mongodb: 3.6.14
+            node: '8'
+            mongodb: '3.6.14'
       - test:
           e:
             name: node
-            node: 8
-            mongodb: 4.0.12
+            node: '8'
+            mongodb: '4.0.12'
       - test:
           e:
             name: node
-            node: 8
-            mongodb: 4.2.0
+            node: '8'
+            mongodb: '4.2.0'
       - test:
           e:
             name: node
-            node: 10-jessie
-            mongodb: 3.4.22
+            node: '10-jessie'
+            mongodb: '3.4.22'
       - test:
           e:
             name: node
-            node: 10
-            mongodb: 3.6.14
+            node: '10'
+            mongodb: '3.6.14'
       - test:
           e:
             name: node
-            node: 10
-            mongodb: 4.0.12
+            node: '10'
+            mongodb: '4.0.12'
       - test:
           e:
             name: node
-            node: 10
-            mongodb: 4.2.0
+            node: '10'
+            mongodb: '4.2.0'
