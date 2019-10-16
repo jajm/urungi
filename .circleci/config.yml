@@ -39,41 +39,49 @@ workflows:
   test:
     jobs:
       - test:
+          name: node:8 mongodb:3.4
           e:
             name: node
             node: '8-jessie'
             mongodb: '3.4.22'
       - test:
+          name: node:8 mongodb:3.6
           e:
             name: node
             node: '8'
             mongodb: '3.6.14'
       - test:
+          name: node:8 mongodb:4.0
           e:
             name: node
             node: '8'
             mongodb: '4.0.12'
       - test:
+          name: node:8 mongodb:4.2
           e:
             name: node
             node: '8'
             mongodb: '4.2.0'
       - test:
+          name: node:10 mongodb:3.4
           e:
             name: node
             node: '10-jessie'
             mongodb: '3.4.22'
       - test:
+          name: node:10 mongodb:3.6
           e:
             name: node
             node: '10'
             mongodb: '3.6.14'
       - test:
+          name: node:10 mongodb:4.0
           e:
             name: node
             node: '10'
             mongodb: '4.0.12'
       - test:
+          name: node:10 mongodb:4.2
           e:
             name: node
             node: '10'
