@@ -1,139 +1,34 @@
-version: 2
-jobs:
-  node-8-mongo-3.4:
+version: 2.1
+executors:
+  node:
+    parameters:
+      node:
+        type: string
+        default: 8
+      mongodb:
+        type: string
+        default: 3.4.22
     docker:
-      - image: circleci/node:8-jessie
+      - image: circleci/node:<< parameters.node >>
       - image: circleci/mariadb:10.3
-        environment: &mysql_environment
+        environment:
           MYSQL_DATABASE: urungi_tests
           MYSQL_USER: urungi
           MYSQL_PASSWORD: urungi
       - image: circleci/postgres:9.6
-        environment: &postgres_environment
+        environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: urungi_tests
     working_directory: ~/urungi
     environment:
-      MONGOMS_VERSION: 3.4.22
-    steps:
-      - checkout
-      - run: npm ci
-      - run: npm test
+      MONGOMS_VERSION: << parameters.mongodb >>
 
-  node-8-mongo-3.6:
-    docker:
-      - image: circleci/node:8
-      - image: circleci/mariadb:10.3
-        environment:
-          <<: *mysql_environment
-      - image: circleci/postgres:9.6
-        environment:
-          <<: *postgres_environment
-    working_directory: ~/urungi
-    environment:
-      MONGOMS_VERSION: 3.6.14
-    steps:
-      - checkout
-      - run: npm ci
-      - run: npm test
-
-  node-8-mongo-4.0:
-    docker:
-      - image: circleci/node:8
-      - image: circleci/mariadb:10.3
-        environment:
-          <<: *mysql_environment
-      - image: circleci/postgres:9.6
-        environment:
-          <<: *postgres_environment
-    working_directory: ~/urungi
-    environment:
-      MONGOMS_VERSION: 4.0.12
-    steps:
-      - checkout
-      - run: npm ci
-      - run: npm test
-
-  node-8-mongo-4.2:
-    docker:
-      - image: circleci/node:8
-      - image: circleci/mariadb:10.3
-        environment:
-          <<: *mysql_environment
-      - image: circleci/postgres:9.6
-        environment:
-          <<: *postgres_environment
-    working_directory: ~/urungi
-    environment:
-      MONGOMS_VERSION: 4.2.0
-    steps:
-      - checkout
-      - run: npm ci
-      - run: npm test
-
-  node-10-mongo-3.4:
-    docker:
-      - image: circleci/node:10-jessie
-      - image: circleci/mariadb:10.3
-        environment:
-          <<: *mysql_environment
-      - image: circleci/postgres:9.6
-        environment:
-          <<: *postgres_environment
-    working_directory: ~/urungi
-    environment:
-      MONGOMS_VERSION: 3.4.22
-    steps:
-      - checkout
-      - run: npm ci
-      - run: npm test
-
-  node-10-mongo-3.6:
-    docker:
-      - image: circleci/node:10
-      - image: circleci/mariadb:10.3
-        environment:
-          <<: *mysql_environment
-      - image: circleci/postgres:9.6
-        environment:
-          <<: *postgres_environment
-    working_directory: ~/urungi
-    environment:
-      MONGOMS_VERSION: 3.6.14
-    steps:
-      - checkout
-      - run: npm ci
-      - run: npm test
-
-  node-10-mongo-4.0:
-    docker:
-      - image: circleci/node:10
-      - image: circleci/mariadb:10.3
-        environment:
-          <<: *mysql_environment
-      - image: circleci/postgres:9.6
-        environment:
-          <<: *postgres_environment
-    working_directory: ~/urungi
-    environment:
-      MONGOMS_VERSION: 4.0.12
-    steps:
-      - checkout
-      - run: npm ci
-      - run: npm test
-
-  node-10-mongo-4.2:
-    docker:
-      - image: circleci/node:10
-      - image: circleci/mariadb:10.3
-        environment:
-          <<: *mysql_environment
-      - image: circleci/postgres:9.6
-        environment:
-          <<: *postgres_environment
-    working_directory: ~/urungi
-    environment:
-      MONGOMS_VERSION: 4.2.0
+jobs:
+  test:
+    parameters:
+      e:
+        type: executor
+    executor: << parameters.e >>
     steps:
       - checkout
       - run: npm ci
@@ -143,11 +38,43 @@ workflows:
   version: 2
   test:
     jobs:
-      - node-8-mongo-3.4
-      - node-8-mongo-3.6
-      - node-8-mongo-4.0
-      - node-8-mongo-4.2
-      - node-10-mongo-3.4
-      - node-10-mongo-3.6
-      - node-10-mongo-4.0
-      - node-10-mongo-4.2
+      - test:
+          e:
+            name: node
+            node: 8-jessie
+            mongodb: 3.4.22
+      - test:
+          e:
+            name: node
+            node: 8
+            mongodb: 3.6.14
+      - test:
+          e:
+            name: node
+            node: 8
+            mongodb: 4.0.12
+      - test:
+          e:
+            name: node
+            node: 8
+            mongodb: 4.2.0
+      - test:
+          e:
+            name: node
+            node: 10-jessie
+            mongodb: 3.4.22
+      - test:
+          e:
+            name: node
+            node: 10
+            mongodb: 3.6.14
+      - test:
+          e:
+            name: node
+            node: 10
+            mongodb: 4.0.12
+      - test:
+          e:
+            name: node
+            node: 10
+            mongodb: 4.2.0
