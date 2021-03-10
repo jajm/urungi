@@ -1,10 +1,22 @@
 kind: pipeline
 type: docker
-name: default
+name: node-14
 
 steps:
 - name: test
-  image: node
+  image: node:14
+  commands:
+  - npm ci
+  - npm test
+
+---
+kind: pipeline
+type: docker
+name: node-12
+
+steps:
+- name: test
+  image: node:12
   commands:
   - npm ci
   - npm test
