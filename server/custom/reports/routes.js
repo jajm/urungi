@@ -1,7 +1,9 @@
 const config = require('config');
+const express = require('express');
 const restrict = require('../../middlewares/restrict');
+const assertPikitiaIsConfigured = require('../../middlewares/assert-pikitia-is-configured');
 const mongoose = require('mongoose');
-const Report = mongoose.model('Reports');
+const Report = mongoose.model('Report');
 const pikitia = require('../../helpers/pikitia');
 
 module.exports = function (app) {
@@ -22,14 +24,19 @@ module.exports = function (app) {
     app.post('/api/reports/data-query', Reports.dataQuery);
     app.post('/api/reports/filter-values-query', Reports.filterValuesQuery);
 
-    app.get('/api/reports/:id.png', async function (req, res, next) {
-        try {
-            const report = await Report.findById(req.params.id);
-            if (!(report && (req.isAuthenticated() || report.isPublic))) {
-                return res.sendStatus(404);
-            }
+    const reportRouter = express.Router();
 
-            const url = config.get('url') + `/#/reports/view/${report.id}`;
+    reportRouter.use(['/png', '/pdf'], assertPikitiaIsConfigured);
+
+    reportRouter.options(['/png', '/pdf'], function (req, res) {
+        res.set('Allow', 'POST');
+        res.sendStatus(200);
+    });
+
+    reportRouter.post('/png', async function (req, res, next) {
+        try {
+            const report = res.locals.report;
+            const url = config.get('url') + config.get('base') + `/reports/view/${report.id}`;
             const buffer = await pikitia.toPNG(url, {
                 cookies: req.cookies,
                 viewport: {
@@ -38,31 +45,52 @@ module.exports = function (app) {
                 },
             });
 
-            const filename = report.reportName.replace(/"/g, '_') + '.png';
-            res.set('Content-Disposition', 'attachment; filename="' + filename + '"');
-            res.set('Content-Type', 'image/png');
-            res.status(200).send(buffer);
+            const response = {
+                data: buffer.toString('base64'),
+            };
+
+            res.status(200).json(response);
         } catch (e) {
             return next(e);
         }
     });
 
-    app.get('/api/reports/:id.pdf', async function (req, res, next) {
+    reportRouter.post('/pdf', async function (req, res, next) {
         try {
-            const report = await Report.findById(req.params.id);
+            const report = res.locals.report;
+
+            const url = config.get('url') + config.get('base') + `/reports/view/${report.id}`;
+            const options = {
+                cookies: req.cookies,
+                displayHeaderFooter: req.body.displayHeaderFooter || false,
+                headerTemplate: req.body.headerTemplate || '',
+                footerTemplate: req.body.footerTemplate || '',
+            };
+
+            const buffer = await pikitia.toPDF(url, options);
+
+            const response = {
+                data: buffer.toString('base64'),
+            };
+
+            res.status(200).json(response);
+        } catch (e) {
+            return next(e);
+        }
+    });
+
+    function findReport (req, res, next) {
+        Report.findById(req.params.id).then(report => {
             if (!(report && (req.isAuthenticated() || report.isPublic))) {
                 return res.sendStatus(404);
             }
 
-            const url = config.get('url') + `/#/reports/view/${report.id}`;
-            const buffer = await pikitia.toPDF(url, { cookies: req.cookies });
+            res.locals.report = report;
+            next();
+        }, () => {
+            return res.sendStatus(404);
+        });
+    }
 
-            const filename = report.reportName.replace(/"/g, '_') + '.pdf';
-            res.set('Content-Disposition', 'attachment; filename="' + filename + '"');
-            res.set('Content-Type', 'application/pdf');
-            res.status(200).send(buffer);
-        } catch (e) {
-            return next(e);
-        }
-    });
+    app.use('/api/reports/:id', findReport, reportRouter);
 };

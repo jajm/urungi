@@ -7,6 +7,113 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added Spanish translation
+
+### Dependencies
+
+- Updated angular to 1.8.0
+- Updated arg to 4.1.3
+- Updated c3 to 0.7.20
+- Updated clipboard to 2.0.6
+- Updated config to 3.3.1
+- Updated connect-mongo to 3.2.0
+- Updated cookie-parser to 1.4.5
+- Updated csurf to 1.11.0
+- Updated ejs to 2.7.4
+- Updated eslint to 7.9.0
+- Updated eslint-config-standard to 14.1.1
+- Updated eslint-config-import to 2.22.0
+- Updated eslint-config-jest to 24.0.2
+- Updated eslint-config-node to 11.1.0
+- Updated express-session to 1.17.1
+- Updated htmlhint to 0.14.1
+- Updated jest to 26.4.2
+- Updated jquery to 3.5.1
+- Updated jquery-validation to 1.19.2
+- Updated jsplumb to 2.14.6
+- Updated knex to 0.21.5
+- Updated migrate-mongo to 8.1.2
+- Updated moment to 2.29.0
+- Updated mongodb-memory-server to 6.8.0
+- Updated mongoose to 5.10.6
+- Updated mssql to 6.2.2
+- Updated mysql to 2.18.1
+- Updated nodemailer to 6.4.11
+- Updated oracledb to 5.0.0
+- Updated passport to 0.4.1
+- Updated password-generator to 2.3.2
+- Updated pg to 8.3.3
+- Updated request to 2.88.2
+- Updated set-cookie-parser to 2.4.6
+- Updated stylelint to 13.7.1
+- Updated stylelint-config-standard to 20.0.0
+
+## [2.2.0] - 2020-04-01
+
+### Added
+
+- Added command line interface (bin/cli)
+- Added ability to configure uploads path
+
+### Changed
+
+- scripts in script/ have been replaced by a command in the new CLI
+- Dockerfile now takes a build arg `NODE_TAG`
+- docker-compose.yml reads environment variables `NODE_TAG` and `MONGO_TAG`
+
+### Fixed
+
+- Fixed date filter when using patterns 'This month' and 'Last month'
+- Sanitized user input used as regexp
+
+### Removed
+
+- Removed "Remember me" feature at login because it was not secure
+
+### Dependencies
+
+- Added arg 4.1.2
+- Updated angular to 1.7.9
+- Updated angular-mocks to 1.7.9
+- Updated angular-route to 1.7.9
+- Updated angular-sanitize to 1.7.9
+- Updated eslint to 6.8.0
+- Updated eslint-plugin-import to 2.20.0
+- Updated eslint-plugin-jest to 23.6.0
+- Updated eslint-plugin-node to 11.0.0
+- Updated jest to 25.1.0
+- Updated mongodb-memory-server to 6.2.3
+- Updated mongoose to 5.8.6
+- Updated oracledb to 4.1.0
+- Updated set-cookie-parser to 2.4.1
+- Updated stylelint to 13.0.0
+
+## [2.1.0] - 2020-01-02
+
+### Added
+
+- Added ability to configure the number of workers
+
+### Dependencies
+
+- Updated migrate-mongo to 7.0.1
+
+## [2.0.1] - 2019-12-20
+
+### Fixed
+
+- Fixed sharing a dashboard or a report inside a shared space folder
+- Fixed shared space for non-admin users
+
+### Changed
+
+- Make users API routes more REST-like
+- Disabled the default http.Server timeout of 120s
+
+## [2.0.0] - 2019-11-29
+
 ### Important update information
 
 - The new ability to export reports and dashboards as PDF/PNG requires a new
@@ -16,32 +123,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `pikitia.client_id`, `pikitia.client_secret` and `url` (see [Configuration
   section in README.md](README.md#configuration))
 
+- **BREAKING** Node.js 8 and MongoDB 3.4 are no longer supported. Upgrade to
+  Node.js 10 and MongoDB 3.6 (#208)
+
 ### Added
 
-- Added ability to change a column's label in report
-- Added ability to change column's format in report (for date and number)
-- Added ability to export dashboards and reports as PNG or PDF
-- Added ability to calculate totals in grid and vgrid
+- Added ability to change a column's label in report (#39)
+- Added ability to change column's format in report (for date and number) (#75)
+- Added ability to export dashboards and reports as PNG or PDF (#41, #110)
+- Added ability to calculate totals in grid and vgrid (#74)
+- Added ability to select a theme for reports and dashboards (#109)
+- Added ability to serve Urungi under a subdirectory (#139)
 
 ### Changed
 
 - Move report columns settings into a modal
 - Move report settings into a modal
 - Use HTML table for building grid and vgrid
-- Use PivotTable.js instead of cynteka for building pivot table
+- Use PivotTable.js instead of cynteka for building pivot table (#71)
+- Hide dashboard title on print (#165)
+- Use asynchronous autocompletion for filters to avoid loading thousands of
+  values (#132)
+
+### Removed
+
+- Removed the Advanced tab in layer element modification (modal and sidebar) (#150)
+
+### Fixed
+
+- Fix scripts first-time-setup and set-password
+- Fix date filters for Oracle (#16)
+- Fix a bug where report/dashboard/layer name modification was not always saved (#141)
+- Fixed display issues for layers/reports/dashboards tables on small screens (#65)
+- Use default aggregation set in layer when adding columns to a report
+- Fixed drag and drop in dashboard (#37, #126, #146)
+- Fixed role permissions modification (#197)
 
 ### Dependencies
 
-- Added request 2.88.0
 - Added pivottable 2.23.0
+- Added request 2.88.0
 - Added subtotal 1.11.0-alpha.0
-- Updated migrate-mongo to 6.0.2
-- Updated mongoose to 5.7.0
+- Updated c3 to 0.7.11
+- Updated config to 3.2.3
+- Updated del to 5.1.0
+- Updated ejs to 2.7.1
+- Updated email-templates to 6.0.3
+- Updated eslint to 6.6.0
+- Updated eslint-config-standard to 14.1.0
+- Updated eslint-plugin-import to 2.18.2
+- Updated eslint-plugin-jest to 22.19.0
+- Updated eslint-plugin-node to 10.0.0
+- Updated eslint-plugin-standard to 4.0.1
+- Updated express-session to 1.17.0
 - Updated gulp-angular-gettext to 2.3.0
+- Updated jest to 24.9.0 and forced graceful-fs to 4.2.2
+- Updated jsplumb to 2.12.0
+- Updated knex to 0.19.5
+- Updated migrate-mongo to 6.0.2
+- Updated mongodb-memory-server to 5.2.8
+- Updated mongoose to 5.7.5
+- Updated multer to 1.4.2
+- Updated nodemailer to 6.3.1
+- Updated oracledb to 4.0.1
+- Updated pg to 7.12.1
+- Updated set-cookie-parser to 2.4.0
 - Updated stylelint to 11.1.1
 - Updated stylelint-config-standard to 19.0.0
-- Removed cynteka-pivot-table-jquery
+- Removed angular-draganddrop
 - Removed angular-vs-repeat
+- Removed angular-xeditable
+- Removed codecov
+- Removed cynteka-pivot-table-jquery
+- Removed email-templates
 
 ## [1.2.2] - 2019-08-30
 
@@ -327,7 +481,11 @@ These are the most notable changes made since the fork of
 
 - A lot of minor issues
 
-[Unreleased]: https://github.com/biblibre/urungi/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/biblibre/urungi/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/biblibre/urungi/compare/v2.1.0...v2.2.0
+[2.1.0]: https://github.com/biblibre/urungi/compare/v2.0.1...v2.1.0
+[2.0.1]: https://github.com/biblibre/urungi/compare/v2.0.0...v2.0.1
+[2.0.0]: https://github.com/biblibre/urungi/compare/v1.2.2...v2.0.0
 [1.2.2]: https://github.com/biblibre/urungi/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/biblibre/urungi/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/biblibre/urungi/compare/v1.1.1...v1.2.0

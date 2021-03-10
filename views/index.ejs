@@ -3,6 +3,7 @@
     <head>
         <title>Urungi</title>
 
+        <base href="<%= base %>/index.html">
         <link rel="shortcut icon" href="favicon.png">
 
         <link rel="stylesheet" href="css/bundle.min.css">
@@ -10,8 +11,6 @@
         <link rel="stylesheet" type="text/css" href="css/jsPlumb.css"/>
 
         <link rel="stylesheet" media="print" href="css/print.css"/>
-
-        <link rel="stylesheet" type="text/css" href="css/components.css"/>
 
         <link rel="stylesheet" type="text/css" href="css/main.css"/>
 
@@ -42,13 +41,20 @@
 <script type="text/javascript" src="js/core/user.service.js"></script>
 <script type="text/javascript" src="js/core/uuid.service.js"></script>
 <script type="text/javascript" src="js/core/pager.component.js"></script>
-<script type="text/javascript" src="js/core/list-panel.component.js"></script>
 <script type="text/javascript" src="js/core/language.js"></script>
 <script type="text/javascript" src="js/core/language-select.component.js"></script>
 <script type="text/javascript" src="js/core/share-popover.component.js"></script>
 <script type="text/javascript" src="js/core/delete-modal.component.js"></script>
 <script type="text/javascript" src="js/core/duplicate-modal.component.js"></script>
 <script type="text/javascript" src="js/core/share-modal.component.js"></script>
+<script type="text/javascript" src="js/core/pdf-export-settings-modal.component.js"></script>
+<script type="text/javascript" src="js/core/table-column-filter.component.js"></script>
+<script type="text/javascript" src="js/core/table-column-sort.component.js"></script>
+<script type="text/javascript" src="js/core/http-interceptor.service.js"></script>
+<script type="text/javascript" src="js/core/dragstart.directive.js"></script>
+<script type="text/javascript" src="js/core/drop-target.directive.js"></script>
+<script type="text/javascript" src="js/core/editable-text.directive.js"></script>
+<script type="text/javascript" src="js/core/time-from-now.filter.js"></script>
 <script type="text/javascript" src="js/sidebar/sidebar.module.js"></script>
 <script type="text/javascript" src="js/sidebar/sidebar.component.js"></script>
 <script type="text/javascript" src="js/inspector/inspector.js"></script>
@@ -69,7 +75,8 @@
 <script type="text/javascript" src="js/reports/pivot.service.js"></script>
 <script type="text/javascript" src="js/reports/xlsx.service.js"></script>
 <script type="text/javascript" src="js/reports/filter-prompt.component.js"></script>
-<script type="text/javascript" src="js/reports/reports-list-item.component.js"></script>
+<script type="text/javascript" src="js/reports/reports-table.component.js"></script>
+<script type="text/javascript" src="js/reports/reports-list-buttons.component.js"></script>
 <script type="text/javascript" src="js/reports/reports-import-modal.component.js"></script>
 <script type="text/javascript" src="js/reports/report-column-settings-modal.component.js"></script>
 <script type="text/javascript" src="js/reports/report-settings-modal.component.js"></script>
@@ -80,7 +87,10 @@
 <script type="text/javascript" src="js/dashboards/dashboards.routes.js"></script>
 <script type="text/javascript" src="js/dashboards/dashboards-view.controller.js"></script>
 <script type="text/javascript" src="js/dashboards/dashboards-list.controller.js"></script>
-<script type="text/javascript" src="js/dashboards/dashboards-list-item.component.js"></script>
+<script type="text/javascript" src="js/dashboards/dashboard-edit.controller.js"></script>
+<script type="text/javascript" src="js/dashboards/dashboards-list-buttons.component.js"></script>
+<script type="text/javascript" src="js/dashboards/dashboard-image.component.js"></script>
+<script type="text/javascript" src="js/dashboards/dashboard-image-modal.component.js"></script>
 <script type="text/javascript" src="js/data-sources/data-sources.module.js"></script>
 <script type="text/javascript" src="js/data-sources/data-sources.routes.js"></script>
 <script type="text/javascript" src="js/data-sources/data-sources-list.controller.js"></script>
@@ -89,7 +99,7 @@
 <script type="text/javascript" src="js/layers/layers.routes.js"></script>
 <script type="text/javascript" src="js/layers/layer.service.js"></script>
 <script type="text/javascript" src="js/layers/layers-list.controller.js"></script>
-<script type="text/javascript" src="js/layers/layers-list-item.component.js"></script>
+<script type="text/javascript" src="js/layers/layers-list-buttons.component.js"></script>
 <script type="text/javascript" src="js/layers/layers-new-modal.component.js"></script>
 <script type="text/javascript" src="js/layer/layerObjectProperties.js"></script>
 <script type="text/javascript" src="js/layer/controller.js"></script>
@@ -98,11 +108,15 @@
 <script type="text/javascript" src="js/users/users-list.controller.js"></script>
 <script type="text/javascript" src="js/users/users-view.controller.js"></script>
 <script type="text/javascript" src="js/users/users-edit-modal.component.js"></script>
-<script type="text/javascript" src="js/roles/controller.js"></script>
+<script type="text/javascript" src="js/themes/themes.module.js"></script>
+<script type="text/javascript" src="js/themes/theme-select.component.js"></script>
+<script type="text/javascript" src="js/themes/theme-link.component.js"></script>
+<script type="text/javascript" src="js/roles/roles.module.js"></script>
+<script type="text/javascript" src="js/roles/roles.routes.js"></script>
+<script type="text/javascript" src="js/roles/roles-list.controller.js"></script>
+<script type="text/javascript" src="js/roles/role-edit-modal.component.js"></script>
 <script type="text/javascript" src="js/logout/controller.js"></script>
 <script type="text/javascript" src="js/spaces/controller.js"></script>
-<script type="text/javascript" src="js/dashboardv2/controller.js"></script>
-<script type="text/javascript" src="js/dashboardv2/model.js"></script>
 <script type="text/javascript" src="js/inspector/page_block.js"></script>
 <script type="text/javascript" src="js/widgets/reportHtmlWidgets.js"></script>
 <script type="text/javascript" src="js/widgets/htmlWidgets.js"></script>
@@ -111,8 +125,6 @@
 <script type="text/javascript" src="js/io/io.routes.js"></script>
 <script type="text/javascript" src="js/io/import.controller.js"></script>
 <script type="text/javascript" src="js/io/export.controller.js"></script>
-<script type="text/javascript" src="js/files/service.js"></script>
-<script type="text/javascript" src="js/files/fileModal.js"></script>
 
 <script type="text/javascript" src="layerUtils.js"></script>
 

@@ -16,19 +16,32 @@ afterAll(async () => {
 });
 
 describe('Dashboards API', function () {
-    let Users;
-    let Dashboardsv2;
+    let User;
+    let Dashboard;
     let headers;
 
     beforeAll(async () => {
-        Users = mongoose.model('Users');
-        Dashboardsv2 = mongoose.model('Dashboardsv2');
+        User = mongoose.model('User');
+        Dashboard = mongoose.model('Dashboard');
         headers = await helpers.login(app);
     });
 
-    describe('GET /api/dashboardsv2/find-all', function () {
+    let dashboard;
+
+    beforeEach(async function createDashboard () {
+        dashboard = await Dashboard.create({
+            companyID: 'COMPID',
+            dashboardName: 'Dashboard',
+            nd_trash_deleted: false,
+        });
+    });
+    afterEach(async function removeDashboard () {
+        return dashboard.remove();
+    });
+
+    describe('GET /api/dashboards/find-all', function () {
         it('should find all dashboards and their data', async function () {
-            const res = await request(app).get('/api/dashboardsv2/find-all')
+            const res = await request(app).get('/api/dashboards/find-all')
                 .set(headers)
                 .expect(200);
 
@@ -39,39 +52,28 @@ describe('Dashboards API', function () {
         });
     });
 
-    describe('GET /api/dashboardsv2/find-one', function () {
+    describe('GET /api/dashboards/find-one', function () {
         it('should find one dashboard and its data', async function () {
-            var user = await Users.findOne({ userName: 'administrator' });
-            let res = await request(app).post('/api/dashboardsv2/create')
-                .set(headers)
-                .send({ companyID: 'COMPID', dashboardName: 'Dashboard' });
-            res = await request(app).get('/api/dashboardsv2/find-one')
-                .query({ id: res.body.item._id })
+            const res = await request(app).get('/api/dashboards/find-one')
+                .query({ id: dashboard.id })
                 .set(headers)
                 .expect(200);
 
             expect(res.body).toHaveProperty('result', 1);
             expect(res.body).toHaveProperty('item');
-            expect(res.body.item).toHaveProperty('__v');
             expect(res.body.item).toHaveProperty('companyID', 'COMPID');
             expect(res.body.item).toHaveProperty('dashboardName', 'Dashboard');
-            expect(res.body.item).toHaveProperty('owner', user.id);
-            expect(res.body.item).toHaveProperty('isPublic', false);
-            expect(res.body.item).toHaveProperty('createdBy', user.id);
-            expect(res.body.item).toHaveProperty('createdOn');
             expect(res.body.item).toHaveProperty('_id');
             expect(res.body.item).toHaveProperty('history');
             expect(res.body.item).toHaveProperty('items');
             expect(res.body.item).toHaveProperty('reports');
             expect(res.body.item).toHaveProperty('nd_trash_deleted', false); ;
-
-            await Dashboardsv2.deleteOne({ dashboardName: 'Dashboard' });
         });
     });
-    describe('POST /api/dashboardsv2/create', function () {
+    describe('POST /api/dashboards/create', function () {
         it('should create a dashboard', async function () {
-            var user = await Users.findOne({ userName: 'administrator' });
-            const res = await request(app).post('/api/dashboardsv2/create')
+            var user = await User.findOne({ userName: 'administrator' });
+            const res = await request(app).post('/api/dashboards/create')
                 .set(headers)
                 .send({ companyID: 'COMPID', dashboardName: 'Dashboard' })
                 .expect(200);
@@ -91,89 +93,36 @@ describe('Dashboards API', function () {
             expect(res.body.item).toHaveProperty('items');
             expect(res.body.item).toHaveProperty('reports');
             expect(res.body.item).toHaveProperty('nd_trash_deleted', false); ;
-            await Dashboardsv2.deleteOne({ dashboardName: 'Dashboard' });
+            await Dashboard.deleteOne({ dashboardName: 'Dashboard' });
         });
     });
 
-    describe('POST /api/dashboardsv2/duplicate', function () {
-        it('should duplicate a dashboard', async function () {
-            var user = await Users.findOne({ userName: 'administrator' });
-            let res = await request(app).post('/api/dashboardsv2/create')
-                .set(headers)
-                .send({ companyID: 'COMPID', dashboardName: 'Dashboard' })
-                .expect(200);
-
-            res = await request(app).post('/api/dashboardsv2/duplicate')
-                .set(headers)
-                .send({ companyID: 'COMPID', dashboardName: 'Dashboard' })
-                .expect(200);
-
-            expect(res.body).toHaveProperty('result', 1);
-            expect(res.body).toHaveProperty('msg', 'Item created');
-            expect(res.body).toHaveProperty('item');
-            expect(res.body.item).toHaveProperty('__v');
-            expect(res.body.item).toHaveProperty('companyID', 'COMPID');
-            expect(res.body.item).toHaveProperty('dashboardName', 'Copy of Dashboard');
-            expect(res.body.item).toHaveProperty('owner', user.id);
-            expect(res.body.item).toHaveProperty('isPublic', false);
-            expect(res.body.item).toHaveProperty('createdBy', user.id);
-            expect(res.body.item).toHaveProperty('createdOn');
-            expect(res.body.item).toHaveProperty('_id');
-            expect(res.body.item).toHaveProperty('history');
-            expect(res.body.item).toHaveProperty('items');
-            expect(res.body.item).toHaveProperty('reports');
-            expect(res.body.item).toHaveProperty('nd_trash_deleted', false); ;
-            res = await Dashboardsv2.deleteOne({ dashboardName: 'Copy of Dashboard' });
-            res = await Dashboardsv2.deleteOne({ dashboardName: 'Dashboard' });
-        });
-    });
-
-    describe('POST /api/dashboardsv2/update/:id', function () {
+    describe('POST /api/dashboards/update/:id', function () {
         it('should update a dashboard', async function () {
-            await Users.findOne({ userName: 'administrator' });
-            let res = await request(app).post('/api/dashboardsv2/create')
+            const res = await request(app).post('/api/dashboards/update/' + dashboard.id)
                 .set(headers)
-                .send({ companyID: 'COMPID', dashboardName: 'Dashboard' });
-            res = await request(app).post('/api/dashboardsv2/update/' + res.body.item._id)
-                .set(headers)
-                .send({ _id: res.body.item._id });
+                .send({ _id: dashboard.id });
             expect(res.body).toHaveProperty('result', 1);
             expect(res.body).toHaveProperty('msg', '1 record updated.');
-            await Dashboardsv2.deleteOne({ dashboardName: 'Dashboard' });
+            await Dashboard.deleteOne({ dashboardName: 'Dashboard' });
         });
     });
 
-    describe('POST /api/dashboardsv2/delete/:id', function () {
-        let dashboard;
-
-        beforeEach(async function createDashboard () {
-            dashboard = await Dashboardsv2.create({
-                companyID: 'COMPID',
-                dashboardName: 'Dashboard',
-            });
-            await dashboard.publish('root');
-        });
-        afterEach(async function removeDashboard () {
-            return dashboard.remove();
-        });
-
+    describe('POST /api/dashboards/delete/:id', function () {
         it('should delete a dashboard', async function () {
-            const res = await request(app).post('/api/dashboardsv2/delete/' + dashboard.id)
+            const dash = await Dashboard.create({ dashboardName: 'Dash', companyID: 'COMPID' });
+            const res = await request(app).post('/api/dashboards/delete/' + dash.id)
                 .set(headers)
-                .send({ id: dashboard.id });
+                .send({ id: dash.id });
             expect(res.body).toHaveProperty('result', 1);
             expect(res.body).toHaveProperty('msg', 'Dashboard deleted');
         });
     });
 
-    describe('GET /api/dashboardsv2/get/:id', function () {
+    describe('GET /api/dashboards/get/:id', function () {
         it('should get a dashboard and its data', async function () {
-            var user = await Users.findOne({ userName: 'administrator' });
-            let res = await request(app).post('/api/dashboardsv2/create')
-                .set(headers)
-                .send({ companyID: 'COMPID', dashboardName: 'Dashboard' });
-            res = await request(app).get('/api/dashboardsv2/get/' + res.body.item._id)
-                .query({ id: res.body.item._id })
+            const res = await request(app).get('/api/dashboards/get/' + dashboard.id)
+                .query({ id: dashboard.id })
                 .set(headers)
                 .expect(200);
 
@@ -182,33 +131,16 @@ describe('Dashboards API', function () {
             expect(res.body.item).toHaveProperty('_id');
             expect(res.body.item).toHaveProperty('companyID', 'COMPID');
             expect(res.body.item).toHaveProperty('dashboardName', 'Dashboard');
-            expect(res.body.item).toHaveProperty('owner', user.id);
-            expect(res.body.item).toHaveProperty('isPublic', false);
-            expect(res.body.item).toHaveProperty('createdBy', user.id);
-            expect(res.body.item).toHaveProperty('createdOn');
             expect(res.body.item).toHaveProperty('nd_trash_deleted', false);
-            expect(res.body.item).toHaveProperty('__v');
             expect(res.body.item).toHaveProperty('history');
             expect(res.body.item).toHaveProperty('items');
             expect(res.body.item).toHaveProperty('reports');
-            await Dashboardsv2.deleteOne({ dashboardName: 'Dashboard' });
         });
     });
 
-    describe('POST /api/dashboardsv2/share-page', function () {
-        let dashboard;
-
-        beforeEach(async function createDashboard () {
-            dashboard = await Dashboardsv2.create({
-                companyID: 'COMPID',
-                dashboardName: 'Dashboard',
-            });
-        });
-        afterEach(async function removeDashboard () {
-            return dashboard.remove();
-        });
+    describe('POST /api/dashboards/share-page', function () {
         it('should publish a dashboard', async function () {
-            const res = await request(app).post('/api/dashboardsv2/share-page')
+            const res = await request(app).post('/api/dashboards/share-page')
                 .set(headers)
                 .send({ _id: dashboard.id, parentFolder: 'root' })
                 .expect(200);
@@ -216,28 +148,15 @@ describe('Dashboards API', function () {
             expect(res.body).toHaveProperty('result', 1);
             expect(res.body).toHaveProperty('msg', 'Dashboard shared');
 
-            const d = await Dashboardsv2.findById(dashboard.id);
+            const d = await Dashboard.findById(dashboard.id);
             expect(d).toHaveProperty('isShared', true);
             expect(d).toHaveProperty('parentFolder', 'root');
         });
     });
 
-    describe('POST /api/dashboardsv2/unpublish', function () {
-        let dashboard;
-
-        beforeEach(async function createDashboard () {
-            dashboard = await Dashboardsv2.create({
-                companyID: 'COMPID',
-                dashboardName: 'Dashboard',
-            });
-            await dashboard.publish('root');
-        });
-        afterEach(async function removeDashboard () {
-            return dashboard.remove();
-        });
-
+    describe('POST /api/dashboards/unpublish', function () {
         it('should unpublish a dashboard', async function () {
-            const res = await request(app).post('/api/dashboardsv2/unpublish')
+            const res = await request(app).post('/api/dashboards/unpublish')
                 .set(headers)
                 .send({ _id: dashboard._id })
                 .expect(200);
@@ -245,9 +164,73 @@ describe('Dashboards API', function () {
             expect(res.body).toHaveProperty('result', 1);
             expect(res.body).toHaveProperty('msg', 'Dashboard unpublished');
 
-            const d = await Dashboardsv2.findById(dashboard.id);
+            const d = await Dashboard.findById(dashboard.id);
             expect(d).toHaveProperty('isPublic', false);
             expect(d).toHaveProperty('parentFolder', undefined);
+        });
+    });
+
+    describe('OPTIONS /api/dashboards/:id/png', function () {
+        it('should return 404 if dashboard does not exist', async function () {
+            const res = await request(app).options('/api/dashboards/foo/png')
+                .set(headers);
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should return 501 if pikitia is not configured', async function () {
+            const res = await request(app).options('/api/dashboards/' + dashboard.id + '/png')
+                .set(headers);
+
+            expect(res.status).toBe(501);
+        });
+    });
+
+    describe('POST /api/dashboards/:id/png', function () {
+        it('should return 404 if dashboard does not exist', async function () {
+            const res = await request(app).post('/api/dashboards/foo/png')
+                .set(headers);
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should return 501 if pikitia is not configured', async function () {
+            const res = await request(app).post('/api/dashboards/' + dashboard.id + '/png')
+                .set(headers);
+
+            expect(res.status).toBe(501);
+        });
+    });
+
+    describe('OPTIONS /api/dashboards/:id/pdf', function () {
+        it('should return 404 if dashboard does not exist', async function () {
+            const res = await request(app).options('/api/dashboards/foo/pdf')
+                .set(headers);
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should return 501 if pikitia is not configured', async function () {
+            const res = await request(app).options('/api/dashboards/' + dashboard.id + '/pdf')
+                .set(headers);
+
+            expect(res.status).toBe(501);
+        });
+    });
+
+    describe('POST /api/dashboards/:id/pdf', function () {
+        it('should return 404 if dashboard does not exist', async function () {
+            const res = await request(app).post('/api/dashboards/foo/pdf')
+                .set(headers);
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should return 501 if pikitia is not configured', async function () {
+            const res = await request(app).post('/api/dashboards/' + dashboard.id + '/pdf')
+                .set(headers);
+
+            expect(res.status).toBe(501);
         });
     });
 });

@@ -1,9 +1,14 @@
 const os = require('os');
+const path = require('path');
 
 module.exports = {
     url: undefined,
     ip: undefined,
     port: undefined,
+
+    // Number of processes to spawn
+    // Defaults to the number of logical CPU cores
+    workers: os.cpus().length,
 
     // MongoDB connection string
     // See https://docs.mongodb.com/manual/reference/connection-string/
@@ -12,6 +17,10 @@ module.exports = {
     session: {
         secret: 'CHANGE ME',
     },
+
+    // URI path under which Urungi is served
+    // eg. if Urungi is accessible on https://example.com/urungi/ base is '/urungi'
+    base: '',
 
     mailer: {
         // See https://nodemailer.com/transports/sendmail/
@@ -23,6 +32,12 @@ module.exports = {
             from: 'root@' + os.hostname()
         }
     },
+
+    uploads: {
+        // Absolute path where uploaded files will be stored
+        path: path.join(__dirname, '..', 'uploads'),
+    },
+
     google: {
         clientID: 'your client id',
         clientSecret: 'your client secret',

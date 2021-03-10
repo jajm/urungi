@@ -42,11 +42,11 @@ describe('ExportController', function () {
             const $scope = {};
             vm = $controller('ExportController', { $scope: $scope });
 
-            $httpBackend.expect('GET', '/api/layers/find-all')
+            $httpBackend.expect('GET', '/api/layers')
                 .respond(apiLayersFindAllResponse());
             $httpBackend.expect('GET', '/api/reports/find-all')
                 .respond(apiReportsFindAllResponse());
-            $httpBackend.expect('GET', '/api/dashboardsv2/find-all')
+            $httpBackend.expect('GET', '/api/dashboards/find-all')
                 .respond(apiDashboardsFindAllResponse());
 
             $httpBackend.flush();
@@ -57,23 +57,26 @@ describe('ExportController', function () {
 
             $httpBackend.expect('GET', '/api/reports/find-one?id=fakereportid')
                 .respond(apiReportsFindOneResponse());
-            $httpBackend.expect('GET', '/api/dashboardsv2/find-one?id=fakedashboardid')
+            $httpBackend.expect('GET', '/api/dashboards/find-one?id=fakedashboardid')
                 .respond(apiDashboardsFindOneResponse());
-            $httpBackend.expect('GET', '/api/layers/find-one?id=fakelayerid')
+            $httpBackend.expect('GET', '/api/layers/fakelayerid')
                 .respond(apiLayersFindOneResponse());
-            $httpBackend.expect('GET', '/api/data-sources/find-one?id=fakedatasourceid')
+            $httpBackend.expect('GET', '/api/datasources/fakedatasourceid')
                 .respond(apiDatasourcesFindOneResponse());
 
-            expect(vm.downloadExport().then(() => {
+            const p = vm.downloadExport().then(() => {
                 const result = JSON.parse(lastBlob.array[0]);
                 return result;
-            })).resolves.toEqual({
-                reports: [ getReport() ],
-                dashboards: [ getDashboard() ],
-                layers: [ getLayer() ],
-                datasources: [ getDatasource() ],
             });
-            $httpBackend.flush();
+
+            setTimeout($httpBackend.flush, 0);
+
+            return expect(p).resolves.toEqual({
+                reports: [getReport()],
+                dashboards: [getDashboard()],
+                layers: [getLayer()],
+                datasources: [getDatasource()],
+            });
         });
 
         function getLayer () {
@@ -87,18 +90,14 @@ describe('ExportController', function () {
 
         function apiLayersFindAllResponse () {
             return {
-                result: 1,
                 page: 1,
                 pages: 1,
-                items: [ getLayer() ],
+                data: [getLayer()],
             };
         }
 
         function apiLayersFindOneResponse () {
-            return {
-                result: 1,
-                item: getLayer(),
-            };
+            return getLayer();
         }
 
         function getReport () {
@@ -114,7 +113,7 @@ describe('ExportController', function () {
                 result: 1,
                 page: 1,
                 pages: 1,
-                items: [ getReport() ],
+                items: [getReport()],
             };
         }
 
@@ -138,7 +137,7 @@ describe('ExportController', function () {
                 result: 1,
                 page: 1,
                 pages: 1,
-                items: [ getDashboard() ],
+                items: [getDashboard()],
             };
         }
 
@@ -161,10 +160,7 @@ describe('ExportController', function () {
         }
 
         function apiDatasourcesFindOneResponse () {
-            return {
-                result: 1,
-                item: getDatasource(),
-            };
+            return getDatasource();
         }
     });
 });

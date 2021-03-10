@@ -27,8 +27,8 @@
         function activate () {
             vm.newLayer.params = {};
             vm.newLayer.status = 'Not active';
-            api.getDataSources().then(data => {
-                vm.datasources = data.items;
+            api.getDatasources().then(res => {
+                vm.datasources = res.data;
             });
         }
 

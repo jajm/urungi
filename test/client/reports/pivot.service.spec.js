@@ -15,17 +15,10 @@ describe('pivot', function () {
     beforeEach(angular.mock.module('app.layers'));
 
     let pivot;
-    let $httpBackend;
 
-    beforeEach(inject(function (_pivot_, _$httpBackend_) {
+    beforeEach(inject(function (_pivot_) {
         pivot = _pivot_;
-        $httpBackend = _$httpBackend_;
     }));
-
-    afterEach(function () {
-        $httpBackend.verifyNoOutstandingExpectation();
-        $httpBackend.verifyNoOutstandingRequest();
-    });
 
     describe('createGrid', function () {
         it('should create a table', function () {
@@ -34,29 +27,42 @@ describe('pivot', function () {
             const column = {
                 elementID: 'quux',
                 id: 'equuxraw',
+                layerObject: {
+                    elementLabel: 'Bar',
+                    elementType: 'string',
+                },
             };
             const row = {
                 elementID: 'quuz',
                 id: 'equuzraw',
+                layerObject: {
+                    elementLabel: 'Baz',
+                    elementType: 'string',
+                },
             };
             const ykey = {
                 elementID: 'quuy',
                 id: 'equuyavg',
                 elementType: 'number',
                 aggregation: 'avg',
+                layerObject: {
+                    elementLabel: 'Bay',
+                    elementType: 'number',
+                    format: '0.0',
+                },
             };
 
             const report = {
                 selectedLayerID: 'foo',
                 properties: {
                     pivotKeys: {
-                        columns: [ column ],
-                        rows: [ row ],
+                        columns: [column],
+                        rows: [row],
                     },
-                    ykeys: [ ykey ],
+                    ykeys: [ykey],
                 },
                 query: {
-                    columns: [ column, row, ykey ],
+                    columns: [column, row, ykey],
                 },
             };
             const rows = [
@@ -77,34 +83,7 @@ describe('pivot', function () {
                 },
             ];
 
-            $httpBackend.expect('GET', '/api/layers/find-one?id=foo')
-                .respond({
-                    result: 1,
-                    item: {
-                        objects: [
-                            {
-                                elementID: 'quux',
-                                elementLabel: 'Bar',
-                                elementType: 'string',
-                            },
-                            {
-                                elementID: 'quuz',
-                                elementLabel: 'Baz',
-                                elementType: 'string',
-                            },
-                            {
-                                elementID: 'quuy',
-                                elementLabel: 'Bay',
-                                elementType: 'number',
-                                format: '0.0',
-                            },
-                        ],
-                    },
-                });
-
             pivot.createPivotTable(element, report, rows);
-
-            $httpBackend.flush();
 
             const table = element.find('table');
             expect(table).toHaveLength(1);

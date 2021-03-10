@@ -1,0 +1,71 @@
+---
+kind: pipeline
+type: docker
+name: node-14
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: test
+  image: node:14
+  commands:
+  - npm ci
+  - npm test
+  environment:
+    URUNGI_TEST_MYSQL: "{ \"host\": \"mariadb\", \"database\": \"urungi_tests\", \"user\": \"urungi\", \"password\": \"urungi\" }"
+    URUNGI_TEST_PG: "{ \"host\": \"postgres\", \"database\": \"urungi_tests\", \"user\": \"urungi\", \"password\": \"urungi\" }"
+
+services:
+- name: mariadb
+  image: mariadb:10.3
+  environment:
+    MYSQL_DATABASE: urungi_tests
+    MYSQL_PASSWORD: urungi
+    MYSQL_RANDOM_ROOT_PASSWORD: yes
+    MYSQL_USER: urungi
+
+- name: postgres
+  image: postgres:9.6
+  environment:
+    POSTGRES_DB: urungi_tests
+    POSTGRES_PASSWORD: urungi
+    POSTGRES_USER: urungi
+
+---
+kind: pipeline
+type: docker
+name: node-12
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: test
+  image: node:12
+  commands:
+  - npm ci
+  - npm test
+  environment:
+    URUNGI_TEST_MYSQL: "{ \"host\": \"mariadb\", \"database\": \"urungi_tests\", \"user\": \"urungi\", \"password\": \"urungi\" }"
+    URUNGI_TEST_PG: "{ \"host\": \"postgres\", \"database\": \"urungi_tests\", \"user\": \"urungi\", \"password\": \"urungi\" }"
+
+services:
+- name: mariadb
+  image: mariadb:10.3
+  environment:
+    MYSQL_DATABASE: urungi_tests
+    MYSQL_PASSWORD: urungi
+    MYSQL_RANDOM_ROOT_PASSWORD: yes
+    MYSQL_USER: urungi
+
+- name: postgres
+  image: postgres:9.6
+  environment:
+    POSTGRES_DB: urungi_tests
+    POSTGRES_PASSWORD: urungi
+    POSTGRES_USER: urungi
+
+...

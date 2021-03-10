@@ -229,7 +229,7 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
     $scope.pushToDash = function () {
         var params = {};
 
-        return connection.get('/api/dashboardsv2/find-all', params).then(function (data) {
+        return connection.get('/api/dashboards/find-all', params).then(function (data) {
             $scope.dashboards = data;
             $('#dashListModal').modal('show');
         });
@@ -263,7 +263,6 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
             limit: $scope.selectedRecordLimit.value
         };
 
-        $scope.$broadcast('updateFilters');
         $scope.$broadcast('showLoadingMessage', gettextCatalog.getString('Fetching data ...'));
 
         return api.getReportData($scope.selectedReport, params).then(function (result) {
@@ -278,27 +277,38 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
         });
     };
 
-    $scope.onDropOnFilter = function (data, event, type, group) {
-        var item = data['json/custom-object'];
-        event.stopPropagation();
-        item.criterion = {
+    $scope.onDropOnFilter = function (ev) {
+        const type = 'application/vnd.urungi.layer-element+json';
+        const filter = JSON.parse(ev.dataTransfer.getData(type));
+        filter.criterion = {
             text1: '',
             text2: '',
             textList: []
         };
+
+        filter.filterType = 'equal';
+        filter.filterPrompt = false;
+        filter.layerID = $scope.selectedReport.selectedLayerID;
+
         if ($scope.selectedReport.properties.filters.length > 0) {
-            item.conditionType = 'and';
+            filter.conditionType = 'and';
         }
-        $scope.onDropField($scope.selectedReport.properties.filters, item, 'filter');
+
+        $scope.onDropField($scope.selectedReport.properties.filters, filter, 'filter');
     };
 
-    $scope.onDropField = function (elements, newItem, role) {
-        elements.push(newItem);
+    $scope.onDropField = function (elements, layerObject, role) {
+        const element = Object.assign({}, layerObject);
+        element.layerObject = layerObject;
+        if (layerObject.defaultAggregation) {
+            element.aggregation = layerObject.defaultAggregation;
+        }
+        elements.push(element);
 
         $scope.sql = undefined;
 
         if (role === 'order') {
-            newItem.sortType = 1;
+            element.sortType = 1;
         }
     };
 
@@ -351,7 +361,6 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
         case 'vertical-grid':
             choice = {
                 propertyBind: $scope.selectedReport.properties.columns,
-                zone: 'columns',
                 role: 'column'
             };
             break;
@@ -360,7 +369,6 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
             if ($scope.selectedReport.properties.pivotKeys.rows.length === 0) {
                 choice = {
                     propertyBind: $scope.selectedReport.properties.pivotKeys.rows,
-                    zone: 'prow',
                     role: 'column',
                     forbidAggregation: true
                 };
@@ -368,14 +376,12 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
                 if ($scope.selectedReport.properties.pivotKeys.columns.length === 0) {
                     choice = {
                         propertyBind: $scope.selectedReport.properties.pivotKeys.columns,
-                        zone: 'pcol',
                         role: 'column',
                         forbidAggregation: true
                     };
                 } else {
                     choice = {
                         propertyBind: $scope.selectedReport.properties.ykeys,
-                        zone: 'ykeys',
                         role: 'column'
                     };
                 }
@@ -388,20 +394,17 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
             if ($scope.selectedReport.properties.xkeys.length === 0) {
                 choice = {
                     propertyBind: $scope.selectedReport.properties.xkeys,
-                    zone: 'xkeys',
                     role: 'column'
                 };
             } else {
                 if ($scope.selectedReport.properties.ykeys.length === 0 || $scope.selectedReport.properties.order.length > 0 || chooseColumn) {
                     choice = {
                         propertyBind: $scope.selectedReport.properties.ykeys,
-                        zone: 'ykeys',
                         role: 'column'
                     };
                 } else {
                     choice = {
                         propertyBind: $scope.selectedReport.properties.order,
-                        zone: 'order',
                         role: 'order'
                     };
                 }
@@ -412,7 +415,6 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
         case 'gauge':
             choice = {
                 propertyBind: $scope.selectedReport.properties.ykeys,
-                zone: 'ykeys',
                 role: 'column'
             };
             break;
@@ -421,17 +423,12 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
         return choice;
     };
 
-    $scope.autoFill = function (ngModelItem) {
-        const newItem = $scope.toReportItem(ngModelItem);
-        var choice = $scope.autoChooseArea(newItem);
-        newItem.zone = choice.zone;
+    $scope.autoFill = function (layerObject) {
+        var choice = $scope.autoChooseArea(layerObject);
 
-        var found = false;
-        for (const item of choice.propertyBind) {
-            if (item.elementID === newItem.elementID) { found = true; }
-        }
+        const found = choice.propertyBind.find(item => item.elementID === layerObject.elementID);
         if (!found) {
-            $scope.onDropField(choice.propertyBind, newItem, choice.role);
+            $scope.onDropField(choice.propertyBind, layerObject, choice.role);
         }
     };
 
@@ -525,8 +522,6 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
         // This ensures that there are no hidden columns in the query, which results in strange behaviour
         for (const col of movedColumns) {
             const choice = $scope.autoChooseArea(col, true);
-            col.zone = choice.zone;
-            // queryModel.updateColumnField(col, 'zone', choice.zone);
             choice.propertyBind.push(col);
             if (choice.forbidAggregation) {
                 delete col.aggregation;
@@ -595,11 +590,6 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
         filter.searchValue = option.value;
         filter.filterText1 = option.value;
         filter.filterLabel1 = option.label;
-    };
-
-    $scope.getElementProperties = function (element, elementID) {
-        $scope.selectedElement = element;
-        $scope.tabs.selected = 'settings';
     };
 
     $scope.onChangeElementProperties = function () {
@@ -755,6 +745,7 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
             component: 'appReportSettingsModal',
             resolve: {
                 report: () => $scope.selectedReport,
+                isForDash: () => $scope.isForDash,
             },
         });
 
@@ -762,6 +753,31 @@ angular.module('app').controller('reportCtrl', function ($scope, connection, $co
             $scope.selectedReport.reportType = settings.reportType;
             $scope.selectedReport.properties.legendPosition = settings.legendPosition;
             $scope.selectedReport.properties.height = settings.height;
+            $scope.selectedReport.theme = settings.theme;
         }, () => {});
     };
+
+    $scope.isReportSettingsModalAvailable = isReportSettingsModalAvailable;
+
+    function isReportSettingsModalAvailable () {
+        // If not for a dashboard, there is at least the theme setting
+        if (!$scope.isForDash) {
+            return true;
+        }
+
+        const report = $scope.selectedReport;
+        if (['chart-line', 'chart-pie', 'chart-donut'].includes(report.reportType)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    $scope.onElementDragStart = onElementDragStart;
+    function onElementDragStart (ev, element) {
+        const json = angular.toJson(element);
+
+        ev.dataTransfer.effectAllowed = 'copy';
+        ev.dataTransfer.setData('application/vnd.urungi.layer-element+json', json);
+    }
 });

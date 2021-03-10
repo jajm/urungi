@@ -37,8 +37,8 @@ describe('ImportController', function () {
     });
 
     describe('upload', function () {
-        it('should check import file and import all objects', () => {
-            $httpBackend.expect('GET', '/api/data-sources/find-all')
+        it('should check import file and import all objects', async function () {
+            $httpBackend.expect('GET', '/api/datasources')
                 .respond(apiDatasourcesFindAllResponse());
 
             const $scope = {};
@@ -60,23 +60,22 @@ describe('ImportController', function () {
             expect(vm.step).toBe(1);
 
             const fileContent = JSON.stringify({
-                reports: [ getReport() ],
-                dashboards: [ getDashboard() ],
-                layers: [ getLayer() ],
-                datasources: [ getDatasource() ],
+                reports: [getReport()],
+                dashboards: [getDashboard()],
+                layers: [getLayer()],
+                datasources: [getDatasource()],
             });
             const file = new File([fileContent], 'export.json');
 
-            $httpBackend.expect('GET', '/api/layers/find-one?id=fakelayerid')
+            $httpBackend.expect('GET', '/api/layers/fakelayerid')
                 .respond(apiLayersFindOneResponse());
             $httpBackend.expect('GET', '/api/reports/find-one?id=fakereportid')
                 .respond(apiReportsFindOneResponse());
-            $httpBackend.expect('GET', '/api/dashboardsv2/find-one?id=fakedashboardid')
+            $httpBackend.expect('GET', '/api/dashboards/find-one?id=fakedashboardid')
                 .respond(apiDashboardsFindOneResponse());
 
-            expect(vm.upload(file)).resolves.toBeUndefined();
-
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+            await expect(vm.upload(file)).resolves.toBeUndefined();
 
             expect(vm.checkError).toBeUndefined();
             expect(vm.checkingFile).toBe(false);
@@ -86,10 +85,10 @@ describe('ImportController', function () {
                 fakedatasourceid: getDatasource(),
             });
             expect(vm.importBundle).toEqual({
-                layers: [ { valid: true, errors: [], exists: true, doc: getLayer() } ],
-                reports: [ { valid: true, errors: [], exists: true, doc: getReport() } ],
-                dashboards: [ { valid: true, errors: [], exists: true, doc: getDashboard() } ],
-                datasources: [ { doc: getDatasource() } ],
+                layers: [{ valid: true, errors: [], exists: true, doc: getLayer() }],
+                reports: [{ valid: true, errors: [], exists: true, doc: getReport() }],
+                dashboards: [{ valid: true, errors: [], exists: true, doc: getDashboard() }],
+                datasources: [{ doc: getDatasource() }],
             });
             expect(vm.importProgressValue).toBe(0);
             expect(vm.importProgressMax).toBe(100);
@@ -102,17 +101,18 @@ describe('ImportController', function () {
             vm.importBundle.reports[0].overwrite = true;
             vm.importBundle.dashboards[0].overwrite = true;
 
-            $httpBackend.expect('POST', '/api/layers/update/fakelayerid')
+            $httpBackend.expect('PUT', '/api/layers/fakelayerid')
                 .respond({ result: 1 });
             $httpBackend.expect('POST', '/api/reports/update/fakereportid')
                 .respond({ result: 1 });
-            $httpBackend.expect('POST', '/api/dashboardsv2/update/fakedashboardid')
+            $httpBackend.expect('POST', '/api/dashboards/update/fakedashboardid')
                 .respond({ result: 1 });
 
             vm.form = { $valid: true };
-            expect(vm.doImport()).resolves.toBeUndefined();
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            await expect(vm.doImport()).resolves.toBeUndefined();
 
             expect(vm.checkError).toBeUndefined();
             expect(vm.checkingFile).toBe(false);
@@ -144,10 +144,7 @@ describe('ImportController', function () {
         }
 
         function apiLayersFindOneResponse () {
-            return {
-                result: 1,
-                item: getLayer(),
-            };
+            return getLayer();
         }
 
         function getReport () {
@@ -196,10 +193,9 @@ describe('ImportController', function () {
 
         function apiDatasourcesFindAllResponse () {
             return {
-                result: 1,
                 page: 1,
                 pages: 1,
-                items: [ getDatasource() ],
+                data: [getDatasource()],
             };
         }
     });

@@ -19,6 +19,49 @@ describe('api', () => {
         $httpBackend.verifyNoOutstandingRequest();
     });
 
+    describe('api.getVersion', function () {
+        it('should call GET /api/version', function () {
+            const url = '/api/version';
+            const response = {
+                data: {
+                    version: '2.0.0',
+                    gitVersion: '2.0.0-1-g0de3ed85-dirty',
+                },
+            };
+
+            $httpBackend.expect('GET', url).respond(response);
+
+            const p = api.getVersion();
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(response);
+        });
+    });
+
+    describe('api.getSharedSpace', function () {
+        it('should call GET /api/shared-space', function () {
+            const response = { items: [] };
+            $httpBackend.expect('GET', '/api/shared-space').respond(response);
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getSharedSpace()).resolves.toEqual(response);
+        });
+    });
+
+    describe('api.setSharedSpace', function () {
+        it('should call PUT /api/shared-space', function () {
+            const sharedSpace = [];
+            const response = { items: sharedSpace };
+            $httpBackend.expect('PUT', '/api/shared-space', sharedSpace).respond(response);
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.setSharedSpace(sharedSpace)).resolves.toEqual(response);
+        });
+    });
+
     describe('api.getReports', () => {
         it('should call /api/reports/find-all', () => {
             const url = '/api/reports/find-all' +
@@ -41,9 +84,9 @@ describe('api', () => {
             };
             const p = api.getReports(params);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(response);
+            return expect(p).resolves.toEqual(response);
         });
 
         it('should throw if result is 0', () => {
@@ -55,8 +98,9 @@ describe('api', () => {
 
             $httpBackend.expect('GET', url).respond(response);
 
-            expect(api.getReports()).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getReports()).rejects.toThrow('Caught an error');
         });
 
         it('should throw if request failed', () => {
@@ -64,8 +108,9 @@ describe('api', () => {
 
             $httpBackend.expect('GET', url).respond(403, 'Forbidden');
 
-            expect(api.getReports()).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getReports()).rejects.toThrow('Forbidden');
         });
     });
 
@@ -84,9 +129,9 @@ describe('api', () => {
 
             const p = api.getReport(42);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(report);
+            return expect(p).resolves.toEqual(report);
         });
 
         it('should throw if result is 0', () => {
@@ -98,8 +143,9 @@ describe('api', () => {
 
             $httpBackend.expect('GET', url).respond(response);
 
-            expect(api.getReport()).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getReport()).rejects.toThrow('Caught an error');
         });
 
         it('should throw if request failed', () => {
@@ -107,8 +153,9 @@ describe('api', () => {
 
             $httpBackend.expect('GET', url).respond(403, 'Forbidden');
 
-            expect(api.getReport()).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getReport()).rejects.toThrow('Forbidden');
         });
     });
 
@@ -127,9 +174,9 @@ describe('api', () => {
 
             const p = api.createReport(report);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(report);
+            return expect(p).resolves.toEqual(report);
         });
 
         it('should throw if result is 0', () => {
@@ -141,8 +188,9 @@ describe('api', () => {
 
             $httpBackend.expect('POST', url).respond(response);
 
-            expect(api.createReport()).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.createReport()).rejects.toThrow('Caught an error');
         });
 
         it('should throw if request failed', () => {
@@ -150,8 +198,9 @@ describe('api', () => {
 
             $httpBackend.expect('POST', url).respond(403, 'Forbidden');
 
-            expect(api.createReport()).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.createReport()).rejects.toThrow('Forbidden');
         });
     });
 
@@ -171,9 +220,9 @@ describe('api', () => {
 
             const p = api.updateReport(report);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(report);
+            return expect(p).resolves.toEqual(report);
         });
 
         it('should throw if result is 0', () => {
@@ -185,8 +234,9 @@ describe('api', () => {
 
             $httpBackend.expect('POST', url).respond(response);
 
-            expect(api.updateReport({ _id: 0 })).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.updateReport({ _id: 0 })).rejects.toThrow('Caught an error');
         });
 
         it('should throw if request failed', () => {
@@ -194,8 +244,9 @@ describe('api', () => {
 
             $httpBackend.expect('POST', url).respond(403, 'Forbidden');
 
-            expect(api.updateReport({ _id: 0 })).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.updateReport({ _id: 0 })).rejects.toThrow('Forbidden');
         });
     });
 
@@ -223,9 +274,9 @@ describe('api', () => {
 
             const p = api.getReportData(report, { limit: 500, filters: { name: 'value' } });
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(response);
+            return expect(p).resolves.toEqual(response);
         });
 
         it('should throw if request failed', () => {
@@ -233,8 +284,9 @@ describe('api', () => {
 
             $httpBackend.expect('POST', url).respond(403, 'Forbidden');
 
-            expect(api.getReportData({ properties: {} })).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getReportData({ properties: {} })).rejects.toThrow('Forbidden');
         });
     });
 
@@ -256,9 +308,9 @@ describe('api', () => {
 
             const p = api.getReportFilterValues(filter);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(response);
+            return expect(p).resolves.toEqual(response);
         });
 
         it('should throw if request failed', () => {
@@ -266,14 +318,101 @@ describe('api', () => {
 
             $httpBackend.expect('POST', url).respond(403, 'Forbidden');
 
-            expect(api.getReportFilterValues({})).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getReportFilterValues({})).rejects.toThrow('Forbidden');
+        });
+    });
+
+    describe('api.getReportAsPDF', function () {
+        it('should call /api/reports/:id/pdf', function () {
+            const url = '/api/reports/foo/pdf';
+            const response = {
+                data: 'foodata',
+            };
+
+            $httpBackend.expect('POST', url).respond(response);
+
+            const p = api.getReportAsPDF('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(response);
+        });
+    });
+
+    describe('api.getReportAsPNG', function () {
+        it('should call /api/reports/:id/png', function () {
+            const url = '/api/reports/foo/png';
+            const response = {
+                data: 'foodata',
+            };
+
+            $httpBackend.expect('POST', url).respond(response);
+
+            const p = api.getReportAsPNG('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(response);
+        });
+    });
+
+    describe('api.isReportAsPDFAvailable', function () {
+        it('should call OPTIONS /api/reports/:id/pdf and return false', function () {
+            const url = '/api/reports/foo/pdf';
+
+            $httpBackend.expect('OPTIONS', url).respond(501, '');
+
+            const p = api.isReportAsPDFAvailable('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(false);
+        });
+
+        it('should call OPTIONS /api/reports/:id/pdf and return true', function () {
+            const url = '/api/reports/foo/pdf';
+
+            $httpBackend.expect('OPTIONS', url).respond(200, '');
+
+            const p = api.isReportAsPDFAvailable('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(true);
+        });
+    });
+
+    describe('api.isReportAsPNGAvailable', function () {
+        it('should call OPTIONS /api/reports/:id/png and return false', function () {
+            const url = '/api/reports/foo/png';
+
+            $httpBackend.expect('OPTIONS', url).respond(501, '');
+
+            const p = api.isReportAsPNGAvailable('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(false);
+        });
+
+        it('should call OPTIONS /api/reports/:id/png and return true', function () {
+            const url = '/api/reports/foo/png';
+
+            $httpBackend.expect('OPTIONS', url).respond(200, '');
+
+            const p = api.isReportAsPNGAvailable('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(true);
         });
     });
 
     describe('api.getDashboards', () => {
-        it('should call /api/dashboardsv2/find-all', () => {
-            const url = '/api/dashboardsv2/find-all' +
+        it('should call /api/dashboards/find-all', () => {
+            const url = '/api/dashboards/find-all' +
                 '?fields=dashboardName&fields=owner' +
                 '&filters=' + encodeURI('{"owner":"foo"}') +
                 '&page=2&sort=owner&sortType=1';
@@ -293,13 +432,13 @@ describe('api', () => {
             };
             const p = api.getDashboards(params);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(response);
+            return expect(p).resolves.toEqual(response);
         });
 
         it('should throw if result is 0', () => {
-            const url = '/api/dashboardsv2/find-all';
+            const url = '/api/dashboards/find-all';
             const response = {
                 result: 0,
                 msg: 'Caught an error',
@@ -307,23 +446,25 @@ describe('api', () => {
 
             $httpBackend.expect('GET', url).respond(response);
 
-            expect(api.getDashboards()).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getDashboards()).rejects.toThrow('Caught an error');
         });
 
         it('should throw if request failed', () => {
-            const url = '/api/dashboardsv2/find-all';
+            const url = '/api/dashboards/find-all';
 
             $httpBackend.expect('GET', url).respond(403, 'Forbidden');
 
-            expect(api.getDashboards()).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getDashboards()).rejects.toThrow('Forbidden');
         });
     });
 
     describe('api.getDashboard', () => {
-        it('should call /api/dashboardsv2/find-one', () => {
-            const url = '/api/dashboardsv2/find-one?id=42';
+        it('should call /api/dashboards/find-one', () => {
+            const url = '/api/dashboards/find-one?id=42';
             const dashboard = {
                 dashboardName: 'foo',
             };
@@ -336,13 +477,13 @@ describe('api', () => {
 
             const p = api.getDashboard(42);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(dashboard);
+            return expect(p).resolves.toEqual(dashboard);
         });
 
         it('should throw if result is 0', () => {
-            const url = '/api/dashboardsv2/find-one';
+            const url = '/api/dashboards/find-one';
             const response = {
                 result: 0,
                 msg: 'Caught an error',
@@ -350,23 +491,25 @@ describe('api', () => {
 
             $httpBackend.expect('GET', url).respond(response);
 
-            expect(api.getDashboard()).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getDashboard()).rejects.toThrow('Caught an error');
         });
 
         it('should throw if request failed', () => {
-            const url = '/api/dashboardsv2/find-one';
+            const url = '/api/dashboards/find-one';
 
             $httpBackend.expect('GET', url).respond(403, 'Forbidden');
 
-            expect(api.getDashboard()).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getDashboard()).rejects.toThrow('Forbidden');
         });
     });
 
     describe('api.createDashboard', () => {
-        it('should call /api/dashboardsv2/create', () => {
-            const url = '/api/dashboardsv2/create';
+        it('should call /api/dashboards/create', () => {
+            const url = '/api/dashboards/create';
             const dashboard = {
                 dashboardName: 'foo',
             };
@@ -379,13 +522,13 @@ describe('api', () => {
 
             const p = api.createDashboard(dashboard);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(dashboard);
+            return expect(p).resolves.toEqual(dashboard);
         });
 
         it('should throw if result is 0', () => {
-            const url = '/api/dashboardsv2/create';
+            const url = '/api/dashboards/create';
             const response = {
                 result: 0,
                 msg: 'Caught an error',
@@ -393,23 +536,25 @@ describe('api', () => {
 
             $httpBackend.expect('POST', url).respond(response);
 
-            expect(api.createDashboard()).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.createDashboard()).rejects.toThrow('Caught an error');
         });
 
         it('should throw if request failed', () => {
-            const url = '/api/dashboardsv2/create';
+            const url = '/api/dashboards/create';
 
             $httpBackend.expect('POST', url).respond(403, 'Forbidden');
 
-            expect(api.createDashboard()).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.createDashboard()).rejects.toThrow('Forbidden');
         });
     });
 
     describe('api.updateDashboard', () => {
-        it('should call /api/dashboardsv2/update/:id', () => {
-            const url = '/api/dashboardsv2/update/42';
+        it('should call /api/dashboards/update/:id', () => {
+            const url = '/api/dashboards/update/42';
             const dashboard = {
                 _id: 42,
                 dashboardName: 'foo',
@@ -423,13 +568,13 @@ describe('api', () => {
 
             const p = api.updateDashboard(dashboard);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(dashboard);
+            return expect(p).resolves.toEqual(dashboard);
         });
 
         it('should throw if result is 0', () => {
-            const url = '/api/dashboardsv2/update/0';
+            const url = '/api/dashboards/update/0';
             const response = {
                 result: 0,
                 msg: 'Caught an error',
@@ -437,23 +582,111 @@ describe('api', () => {
 
             $httpBackend.expect('POST', url).respond(response);
 
-            expect(api.updateDashboard({ _id: 0 })).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.updateDashboard({ _id: 0 })).rejects.toThrow('Caught an error');
         });
 
         it('should throw if request failed', () => {
-            const url = '/api/dashboardsv2/update/0';
+            const url = '/api/dashboards/update/0';
 
             $httpBackend.expect('POST', url).respond(403, 'Forbidden');
 
-            expect(api.updateDashboard({ _id: 0 })).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.updateDashboard({ _id: 0 })).rejects.toThrow('Forbidden');
+        });
+    });
+
+    describe('api.getDashboardAsPDF', function () {
+        it('should call /api/dashboards/:id/pdf', function () {
+            const url = '/api/dashboards/foo/pdf';
+            const response = {
+                data: 'foodata',
+            };
+
+            $httpBackend.expect('POST', url).respond(response);
+
+            const p = api.getDashboardAsPDF('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(response);
+        });
+    });
+
+    describe('api.getDashboardAsPNG', function () {
+        it('should call /api/dashboards/:id/png', function () {
+            const url = '/api/dashboards/foo/png';
+            const response = {
+                data: 'foodata',
+            };
+
+            $httpBackend.expect('POST', url).respond(response);
+
+            const p = api.getDashboardAsPNG('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(response);
+        });
+    });
+
+    describe('api.isDashboardAsPDFAvailable', function () {
+        it('should call OPTIONS /api/dashboards/:id/pdf and return false', function () {
+            const url = '/api/dashboards/foo/pdf';
+
+            $httpBackend.expect('OPTIONS', url).respond(501, '');
+
+            const p = api.isDashboardAsPDFAvailable('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(false);
+        });
+
+        it('should call OPTIONS /api/dashboards/:id/pdf and return true', function () {
+            const url = '/api/dashboards/foo/pdf';
+
+            $httpBackend.expect('OPTIONS', url).respond(200, '');
+
+            const p = api.isDashboardAsPDFAvailable('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(true);
+        });
+    });
+
+    describe('api.isDashboardAsPNGAvailable', function () {
+        it('should call OPTIONS /api/dashboards/:id/png and return false', function () {
+            const url = '/api/dashboards/foo/png';
+
+            $httpBackend.expect('OPTIONS', url).respond(501, '');
+
+            const p = api.isDashboardAsPNGAvailable('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(false);
+        });
+
+        it('should call OPTIONS /api/dashboards/:id/png and return true', function () {
+            const url = '/api/dashboards/foo/png';
+
+            $httpBackend.expect('OPTIONS', url).respond(200, '');
+
+            const p = api.isDashboardAsPNGAvailable('foo');
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual(true);
         });
     });
 
     describe('api.getLayers', () => {
-        it('should call /api/layers/find-all', () => {
-            const url = '/api/layers/find-all' +
+        it('should call GET /api/layers', () => {
+            const url = '/api/layers' +
                 '?fields=layerName&fields=owner' +
                 '&filters=' + encodeURI('{"owner":"foo"}') +
                 '&page=2&sort=owner&sortType=1';
@@ -473,13 +706,13 @@ describe('api', () => {
             };
             const p = api.getLayers(params);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(response);
+            return expect(p).resolves.toEqual(response);
         });
 
         it('should throw if result is 0', () => {
-            const url = '/api/layers/find-all';
+            const url = '/api/layers';
             const response = {
                 result: 0,
                 msg: 'Caught an error',
@@ -487,71 +720,76 @@ describe('api', () => {
 
             $httpBackend.expect('GET', url).respond(response);
 
-            expect(api.getLayers()).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getLayers()).rejects.toThrow('Caught an error');
         });
 
         it('should throw if request failed', () => {
-            const url = '/api/layers/find-all';
+            const url = '/api/layers';
 
             $httpBackend.expect('GET', url).respond(403, 'Forbidden');
 
-            expect(api.getLayers()).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getLayers()).rejects.toThrow('Forbidden');
+        });
+    });
+
+    describe('api.changeLayerStatus', function () {
+        it('should call PATCH /api/layers/:layerID', function () {
+            const layerID = 'foo';
+            const url = '/api/layers/' + layerID;
+            const newStatus = 'active';
+            const data = {
+                status: newStatus,
+            };
+
+            $httpBackend.expect('PATCH', url, data).respond(200, { status: 'active' });
+
+            const p = api.changeLayerStatus(layerID, newStatus);
+
+            setTimeout($httpBackend.flush);
+
+            return expect(p).resolves.toEqual({ status: 'active' });
         });
     });
 
     describe('api.getLayer', () => {
-        it('should call /api/layers/find-one', () => {
-            const url = '/api/layers/find-one?id=42';
+        it('should call GET /api/layers/:layerId', () => {
+            const url = '/api/layers/42';
             const layer = {
                 layerName: 'foo',
             };
-            const response = {
-                result: 1,
-                item: layer,
-            };
+            const response = layer;
 
             $httpBackend.expect('GET', url).respond(response);
 
             const p = api.getLayer(42);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(layer);
-        });
-
-        it('should throw if result is 0', () => {
-            const url = '/api/layers/find-one';
-            const response = {
-                result: 0,
-                msg: 'Caught an error',
-            };
-
-            $httpBackend.expect('GET', url).respond(response);
-
-            expect(api.getLayer()).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            return expect(p).resolves.toEqual(layer);
         });
 
         it('should throw if request failed', () => {
-            const url = '/api/layers/find-one';
+            const url = '/api/layers/foo';
 
             $httpBackend.expect('GET', url).respond(403, 'Forbidden');
 
-            expect(api.getLayer()).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getLayer('foo')).rejects.toThrow('Forbidden');
         });
     });
 
     describe('api.createLayer', () => {
-        it('should call /api/layers/create', () => {
-            const url = '/api/layers/create';
+        it('should call POST /api/layers', () => {
+            const url = '/api/layers';
             const layer = {
                 layerName: 'foo',
             };
             const response = {
-                result: 1,
                 item: layer,
             };
 
@@ -559,75 +797,172 @@ describe('api', () => {
 
             const p = api.createLayer(layer);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(response);
-        });
-
-        it('should throw if result is 0', () => {
-            const url = '/api/layers/create';
-            const response = {
-                result: 0,
-                msg: 'Caught an error',
-            };
-
-            $httpBackend.expect('POST', url).respond(response);
-
-            expect(api.createLayer()).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            return expect(p).resolves.toEqual(response);
         });
 
         it('should throw if request failed', () => {
-            const url = '/api/layers/create';
+            const url = '/api/layers';
 
             $httpBackend.expect('POST', url).respond(403, 'Forbidden');
 
-            expect(api.createLayer()).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.createLayer()).rejects.toThrow('Forbidden');
         });
     });
 
-    describe('api.updateLayer', () => {
-        it('should call /api/layers/update/:id', () => {
-            const url = '/api/layers/update/42';
+    describe('api.replaceLayer', () => {
+        it('should call PUT /api/layers/:layerId', () => {
+            const url = '/api/layers/42';
             const layer = {
                 _id: 42,
                 layerName: 'foo',
             };
-            const response = {
-                result: 1,
-                item: layer,
-            };
+            const response = layer;
 
-            $httpBackend.expect('POST', url, layer).respond(response);
+            $httpBackend.expect('PUT', url, layer).respond(response);
 
-            const p = api.updateLayer(layer);
+            const p = api.replaceLayer(layer);
 
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
 
-            expect(p).resolves.toEqual(layer);
-        });
-
-        it('should throw if result is 0', () => {
-            const url = '/api/layers/update/0';
-            const response = {
-                result: 0,
-                msg: 'Caught an error',
-            };
-
-            $httpBackend.expect('POST', url).respond(response);
-
-            expect(api.updateLayer({ _id: 0 })).rejects.toThrow('Caught an error');
-            $httpBackend.flush();
+            return expect(p).resolves.toEqual(layer);
         });
 
         it('should throw if request failed', () => {
-            const url = '/api/layers/update/0';
+            const url = '/api/layers/0';
 
-            $httpBackend.expect('POST', url).respond(403, 'Forbidden');
+            $httpBackend.expect('PUT', url).respond(403, 'Forbidden');
 
-            expect(api.updateLayer({ _id: 0 })).rejects.toThrow('Forbidden');
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+
+            return expect(api.replaceLayer({ _id: 0 })).rejects.toThrow('Forbidden');
+        });
+    });
+
+    describe('api.getFiles', function () {
+        it('should call GET /api/files', function () {
+            $httpBackend.expect('GET', '/api/files').respond({ files: [] });
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getFiles()).resolves.toEqual([]);
+        });
+    });
+
+    describe('api.uploadFile', function () {
+        it('should call POST /api/files', function () {
+            const file = new File(['foo'], 'foo.png', { type: 'image/png' });
+            const formData = new FormData();
+            formData.set('content', file);
+
+            $httpBackend.expect('POST', '/api/files').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.uploadFile(file)).resolves.toEqual({});
+        });
+    });
+
+    describe('api.getThemes', function () {
+        it('should call GET /api/themes', function () {
+            $httpBackend.expect('GET', '/api/themes').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getThemes()).resolves.toEqual({});
+        });
+    });
+
+    describe('api.getUsers', function () {
+        it('should call GET /api/users', function () {
+            $httpBackend.expect('GET', '/api/users').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getUsers()).resolves.toEqual({});
+        });
+    });
+
+    describe('api.getUser', function () {
+        it('should call GET /api/users/:userId', function () {
+            $httpBackend.expect('GET', '/api/users/foo').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getUser('foo')).resolves.toEqual({});
+        });
+    });
+
+    describe('api.createUser', function () {
+        it('should call POST /api/users', function () {
+            $httpBackend.expect('POST', '/api/users').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.createUser({})).resolves.toEqual({});
+        });
+    });
+
+    describe('api.updateUser', function () {
+        it('should call PATCH /api/users/:userId', function () {
+            $httpBackend.expect('PATCH', '/api/users/foo').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.updateUser('foo')).resolves.toEqual({});
+        });
+    });
+
+    describe('api.deleteUserRole', function () {
+        it('should call DELETE /api/users/:userId/roles/:roleId', function () {
+            $httpBackend.expect('DELETE', '/api/users/foo/roles/bar').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.deleteUserRole('foo', 'bar')).resolves.toEqual({});
+        });
+    });
+
+    describe('api.addUserRole', function () {
+        it('should call PUT /api/users/:userId/roles/:roleId', function () {
+            $httpBackend.expect('PUT', '/api/users/foo/roles/bar').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.addUserRole('foo', 'bar')).resolves.toEqual({});
+        });
+    });
+
+    describe('api.getUserReports', function () {
+        it('should call GET /api/users/:userId/reports', function () {
+            $httpBackend.expect('GET', '/api/users/foo/reports').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getUserReports('foo')).resolves.toEqual({});
+        });
+    });
+
+    describe('api.getUserDashboards', function () {
+        it('should call GET /api/users/:userId/dashboards', function () {
+            $httpBackend.expect('GET', '/api/users/foo/dashboards').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getUserDashboards('foo')).resolves.toEqual({});
+        });
+    });
+
+    describe('api.getUserCounts', function () {
+        it('should call GET /api/users/:userId/counts', function () {
+            $httpBackend.expect('GET', '/api/users/foo/counts').respond({});
+
+            setTimeout($httpBackend.flush);
+
+            return expect(api.getUserCounts('foo')).resolves.toEqual({});
         });
     });
 });

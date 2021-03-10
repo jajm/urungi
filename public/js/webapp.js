@@ -11,8 +11,6 @@
         'ui.select',
         'ui.bootstrap.datetimepicker',
         'ui.tree',
-        'draganddrop',
-        'xeditable',
         'colorpicker.module',
         'gettext',
         'ngclipboard',
@@ -27,38 +25,30 @@
         'app.dashboards',
         'app.layers',
         'app.users',
+        'app.roles',
         'app.io',
+        'app.themes',
         'app.templates',
     ]);
 
     angular.module('app').config(configure);
 
-    configure.$inject = ['$routeProvider', '$locationProvider', 'Noty'];
+    configure.$inject = ['$routeProvider', '$locationProvider', '$httpProvider', '$uibTooltipProvider', 'Noty', 'base'];
 
-    function configure ($routeProvider, $locationProvider, Noty) {
-        // TODO Use the default prefix '!' or use HTML5 mode
-        $locationProvider.hashPrefix('');
+    function configure ($routeProvider, $locationProvider, $httpProvider, $uibTooltipProvider, Noty, base) {
+        $locationProvider.html5Mode(true);
+
+        $httpProvider.interceptors.push('httpInterceptor');
+
+        $uibTooltipProvider.options({
+            appendToBody: true,
+        });
 
         $routeProvider.otherwise({ redirectTo: '/home' });
 
         $routeProvider.when('/home', {
             templateUrl: 'partials/home/index.html',
             controller: 'homeCtrl'
-        });
-
-        $routeProvider.when('/dashboards/new/:newDashboard/', {
-            templateUrl: 'partials/dashboardv2/edit.html',
-            controller: 'dashBoardv2Ctrl'
-        });
-
-        $routeProvider.when('/dashboards/edit/:dashboardID/', {
-            templateUrl: 'partials/dashboardv2/edit.html',
-            controller: 'dashBoardv2Ctrl'
-        });
-
-        $routeProvider.when('/dashboards/push/:dashboardID/', {
-            templateUrl: 'partials/dashboardv2/edit.html',
-            controller: 'dashBoardv2Ctrl'
         });
 
         $routeProvider.when('/reports/new/', {
@@ -68,12 +58,6 @@
         $routeProvider.when('/reports/edit/:reportID/', {
             templateUrl: 'partials/report/edit.html',
             controller: 'reportCtrl'
-        });
-
-        // roles
-        $routeProvider.when('/roles', {
-            templateUrl: 'partials/roles/list.html',
-            controller: 'rolesCtrl'
         });
 
         $routeProvider.when('/logout', {
@@ -102,22 +86,22 @@
 
     angular.module('app').run(runBlock);
 
-    runBlock.$inject = ['$rootScope', '$location', 'editableOptions', 'connection', 'userService', 'language'];
+    runBlock.$inject = ['$rootScope', '$location', 'base', 'connection', 'userService', 'language'];
 
-    function runBlock ($rootScope, $location, editableOptions, connection, userService, language) {
+    function runBlock ($rootScope, $location, base, connection, userService, language) {
         userService.getCurrentUser().then(user => {
             $rootScope.user = user;
-        });
+        }, () => {});
 
         // Redirect to /login if next route is not public and user is not authenticated
         $rootScope.$on('$routeChangeStart', function (angularEvent, next, current) {
             if (next.$$route && !next.$$route.redirectTo && !next.$$route.isPublic) {
                 userService.getCurrentUser().then(user => {
                     if (!user) {
-                        window.location.href = '/login';
+                        window.location.href = base + '/login';
                     }
                 }, () => {
-                    window.location.href = '/login';
+                    window.location.href = base + '/login';
                 });
             }
         });
@@ -133,10 +117,7 @@
         $rootScope.userContextHelp = [];
         userService.getCurrentUser().then(user => {
             $rootScope.userContextHelp = user.contextHelp;
-        });
-
-        // Set default options for xeditable
-        editableOptions.buttons = 'no';
+        }, () => {});
 
         language.setLanguageFromLocalStorage();
     }

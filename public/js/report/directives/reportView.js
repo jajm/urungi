@@ -12,10 +12,10 @@ angular.module('app').directive('reportView', function ($q, $timeout, reportMode
 
             var childScope;
             $scope.changeContent = function (newHtml) {
-                var html = '<div class="report-view" ng-hide="loading" style="height:100%">';
+                var html = '<div class="report-view" ng-hide="loading">';
                 html += newHtml;
                 html += '</div><div ng-show="loading" class="container-fluid" >';
-                html += '<h3><img src="/images/loader.gif" width="32px" height="32px"/>{{loadingMessage}}</h3>';
+                html += '<h3><img src="images/loader.gif" width="32px" height="32px"/>{{loadingMessage}}</h3>';
                 html += '</div>';
 
                 element.html(html);
@@ -65,7 +65,7 @@ angular.module('app').directive('reportView', function ($q, $timeout, reportMode
                         case 'chart-line':
                         case 'chart-donut':
                         case 'chart-pie':
-                        case 'gauge':
+                        case 'gauge': {
                             const id = 'CHART_' + $scope.report._id + '-' + uuid.v4();
                             const html = c3Charts.getChartHTML($scope.report, $scope.mode, id);
                             $scope.changeContent(html);
@@ -78,13 +78,14 @@ angular.module('app').directive('reportView', function ($q, $timeout, reportMode
                                 c3Charts.rebuildChart($scope.report, id, $scope.data, chart);
                                 $scope.loading = false;
                             });
+                        }
 
                         case 'indicator':
                             $scope.changeContent(reportHtmlWidgets.generateIndicator($scope.report, $scope.data));
                             break;
                         }
                     } else {
-                        $scope.changeContent('<div style="width: 100%; height: 100%; display: flex; align-items: center;"><span style="color: darkgray; font-size: initial; width:100%; text-align: center;"><img src="/images/empty.png">' + gettextCatalog.getString('No data for this report') + '</span></div>');
+                        $scope.changeContent('<div style="width: 100%; height: 100%; display: flex; align-items: center;"><span style="color: darkgray; font-size: initial; width:100%; text-align: center;"><img src="images/empty.png">' + gettextCatalog.getString('No data for this report') + '</span></div>');
                     }
                 }).then(function () {
                     $scope.loading = false;
@@ -92,7 +93,7 @@ angular.module('app').directive('reportView', function ($q, $timeout, reportMode
             });
 
             $scope.$on('clearReport', function () {
-                $scope.changeContent('<div class="container-fluid"  ng-show="loading" ><h3><img src="/images/loader.gif" width="32px" height="32px"/>{{loadingMessage}}</h3></div>');
+                $scope.changeContent('<div class="container-fluid"  ng-show="loading" ><h3><img src="images/loader.gif" width="32px" height="32px"/>{{loadingMessage}}</h3></div>');
                 $scope.loading = false;
             });
 
@@ -102,7 +103,7 @@ angular.module('app').directive('reportView', function ($q, $timeout, reportMode
             });
         },
 
-        template: '<div class="container-fluid"  ng-show="loading" ><h3><img src="/images/loader.gif" width="32px" height="32px"/>{{loadingMessage}}</h3></div>'
+        template: '<div class="container-fluid"  ng-show="loading" ><h3><img src="images/loader.gif" width="32px" height="32px"/>{{loadingMessage}}</h3></div>'
 
     };
 });

@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 class SqlQueryBuilder {
     constructor (knex) {
         this.knex = knex;
@@ -74,7 +76,7 @@ class SqlQueryBuilder {
 
         if (column.isCustom) {
             const args = [];
-            const expr = column.viewExpression.replace(/#([a-z0-9]+)/g, (match, elementID) => {
+            const expr = column.viewExpression.replace(/#([a-z0-9_]+)/g, (match, elementID) => {
                 let element;
                 for (const collection of this.query.layer.params.schema) {
                     const el = collection.elements.find(e => e.elementID === elementID);
@@ -373,7 +375,7 @@ class SqlQueryBuilder {
             let lwday;
 
             switch (filter.criterion.datePattern) {
-            case '#WST-TODAY#':
+            case '#WST-TODAY#': {
                 firstDate = new Date(year + '-' + month + '-' + day + 'T00:00:00.000Z');
                 const tomorrow = new Date(today);
                 tomorrow.setDate(today.getDate() + 1);
@@ -383,8 +385,9 @@ class SqlQueryBuilder {
 
                 lastDate = new Date(year1 + '-' + month1 + '-' + day1 + 'T00:00:00.000Z');
                 break;
+            }
 
-            case '#WST-YESTERDAY#':
+            case '#WST-YESTERDAY#': {
                 lastDate = new Date(year + '-' + month + '-' + day + 'T00:00:00.000Z');
                 const yesterday = new Date(today);
                 yesterday.setDate(today.getDate() - 1);
@@ -394,6 +397,7 @@ class SqlQueryBuilder {
 
                 firstDate = new Date(year1 + '-' + month1 + '-' + day1 + 'T00:00:00.000Z');
                 break;
+            }
 
             case '#WST-THISWEEK#': // TODO: first day monday instead sunday
                 curr = new Date(); // get current date
@@ -419,25 +423,15 @@ class SqlQueryBuilder {
                 break;
 
             case '#WST-THISMONTH#':
-                firstDate = new Date(year + '-' + month + '-01T00:00:00.000Z');
-
-                if (month === 12) {
-                    lastDate = new Date((year + 1) + '-01-01T00:00:00.000Z');
-                } else {
-                    month1 = pad(today.getMonth() + 2);
-                    lastDate = new Date(year + '-' + month1 + '-01T00:00:00.000Z');
-                }
+                firstDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                lastDate = new Date(firstDate.getTime());
+                lastDate.setMonth(firstDate.getMonth() + 1);
                 break;
 
             case '#WST-LASTMONTH#':
-                if (month === 1) {
-                    firstDate = new Date((year - 1) + '-12-01T00:00:00.000Z');
-                } else {
-                    month1 = pad(today.getMonth());
-                    firstDate = new Date(year + '-' + month1 + '-01T00:00:00.000Z');
-                }
-
-                lastDate = new Date(year + '-' + month + '-01T00:00:00.000Z');
+                firstDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                firstDate.setMonth(firstDate.getMonth() - 1);
+                lastDate = new Date(today.getFullYear(), today.getMonth(), 1);
                 break;
 
             case '#WST-THISYEAR#':
@@ -514,15 +508,8 @@ class SqlQueryBuilder {
                 throw new Error('unknown pattern');
             }
 
-            const fyear = firstDate.getFullYear();
-            const fmonth = pad(firstDate.getMonth() + 1);
-            const fday = pad(firstDate.getDate());
-            const lyear = lastDate.getFullYear();
-            const lmonth = pad(lastDate.getMonth() + 1);
-            const lday = pad(lastDate.getDate());
-
-            const queryFirstDate = fyear + '/' + fmonth + '/' + fday;
-            const queryLastDate = lyear + '/' + lmonth + '/' + lday;
+            const queryFirstDate = this.formatDate(firstDate, qb);
+            const queryLastDate = this.formatDate(lastDate, qb);
 
             switch (filter.filterType) {
             case 'equal-pattern':
@@ -558,56 +545,63 @@ class SqlQueryBuilder {
                 });
             }
         } else {
-            const date1 = filter.criterion.date1;
-            const date2 = filter.criterion.date2;
+            let formattedDate1, formattedNextDay, formattedDate2;
 
-            const d1 = new Date(date1);
-            d1.setDate(d1.getDate() + 1);
-            const nextDay = d1.getFullYear() + '-' +
-                pad(d1.getMonth() + 1) + '-' +
-                pad(d1.getDate());
+            if (filter.criterion.date1) {
+                const date1 = new Date(filter.criterion.date1);
+                const nextDay = new Date(filter.criterion.date1);
+                nextDay.setDate(nextDay.getDate() + 1);
+
+                formattedDate1 = this.formatDate(date1, qb);
+                formattedNextDay = this.formatDate(nextDay, qb);
+            }
+
+            if (filter.criterion.date2) {
+                const date2 = new Date(filter.criterion.date2);
+                formattedDate2 = this.formatDate(date2, qb);
+            }
 
             switch (filter.filterType) {
             case 'equal':
                 return applyWhereBuilder(builder => {
-                    builder.where(this.getRef(filter), '>=', date1);
-                    builder.where(this.getRef(filter), '<', nextDay);
+                    builder.where(this.getRef(filter), '>=', formattedDate1);
+                    builder.where(this.getRef(filter), '<', formattedNextDay);
                 });
 
             case 'diferentThan':
                 return applyWhereBuilder(builder => {
-                    builder.where(this.getRef(filter), '<', date1);
-                    builder.orWhere(this.getRef(filter), '>=', nextDay);
+                    builder.where(this.getRef(filter), '<', formattedDate1);
+                    builder.orWhere(this.getRef(filter), '>=', formattedNextDay);
                 });
 
             case 'biggerThan':
                 return applyWhereBuilder(builder => {
-                    builder.where(this.getRef(filter), '>', date1);
+                    builder.where(this.getRef(filter), '>', formattedDate1);
                 });
 
             case 'biggerOrEqualThan':
                 return applyWhereBuilder(builder => {
-                    builder.where(this.getRef(filter), '>=', date1);
+                    builder.where(this.getRef(filter), '>=', formattedDate1);
                 });
 
             case 'lessThan':
                 return applyWhereBuilder(builder => {
-                    builder.where(this.getRef(filter), '<', date1);
+                    builder.where(this.getRef(filter), '<', formattedDate1);
                 });
 
             case 'lessOrEqualThan':
                 return applyWhereBuilder(builder => {
-                    builder.where(this.getRef(filter), '<=', date1);
+                    builder.where(this.getRef(filter), '<=', formattedDate1);
                 });
 
             case 'between':
                 return applyWhereBuilder(builder => {
-                    builder.whereBetween(this.getRef(filter), [date1, date2]);
+                    builder.whereBetween(this.getRef(filter), [formattedDate1, formattedDate2]);
                 });
 
             case 'notBetween':
                 return applyWhereBuilder(builder => {
-                    builder.whereNotBetween(this.getRef(filter), [date1, date2]);
+                    builder.whereNotBetween(this.getRef(filter), [formattedDate1, formattedDate2]);
                 });
 
             case 'null':
@@ -623,6 +617,16 @@ class SqlQueryBuilder {
         }
 
         throw new Error('Invalid filter type : ' + filter.filterType);
+    }
+
+    formatDate (date, qb) {
+        let format = 'YYYY-MM-DD';
+
+        if (qb && qb.client && qb.client.config && qb.client.config.client === 'oracledb') {
+            format = 'DD-MMM-YYYY';
+        }
+
+        return moment(date).format(format);
     }
 }
 

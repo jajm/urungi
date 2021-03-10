@@ -18,8 +18,9 @@
         vm.languageChanged = languageChanged;
 
         const languageLabels = {
-            'en': 'English',
-            'fr': 'Français',
+            en: 'English',
+            es: 'Español',
+            fr: 'Français',
         };
 
         activate();

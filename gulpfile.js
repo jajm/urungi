@@ -22,16 +22,18 @@ const dist = gulp.parallel(
 );
 
 module.exports = {
-    'default': dist,
-    'dist': dist,
+    default: dist,
+    dist: dist,
     'dist:js': dist_js,
     'dist:css': dist_css,
     'dist:fonts': dist_fonts,
     'dist:translations': dist_translations,
     'dist:templates': dist_templates,
-    'pot': pot,
+    pot: pot,
     'po:update': gulp.series(pot, po_update),
     'watch:templates': watch_templates,
+    'watch:less': watch_less,
+    watch: gulp.parallel(watch_templates, watch_less),
 };
 
 function dist_js_clean () {
@@ -62,7 +64,6 @@ function dist_js_build () {
         'node_modules/bootstrap/dist/js/bootstrap.min.js',
         'node_modules/angular/angular.min.js',
         'node_modules/angular-sanitize/angular-sanitize.min.js',
-        'node_modules/angular-draganddrop/angular-draganddrop.min.js',
         'node_modules/angular-route/angular-route.min.js',
         'node_modules/noty/lib/noty.min.js',
         'node_modules/moment/min/moment-with-locales.min.js',
@@ -75,7 +76,6 @@ function dist_js_build () {
         'node_modules/ui-select/dist/select.min.js',
         'node_modules/d3/dist/d3.min.js',
         'node_modules/c3/c3.min.js',
-        'node_modules/angular-xeditable/dist/js/xeditable.min.js',
         'node_modules/ng-file-upload/dist/ng-file-upload-shim.min.js',
         'node_modules/clipboard/dist/clipboard.min.js',
         'node_modules/ngclipboard/dist/ngclipboard.min.js',
@@ -108,54 +108,18 @@ function dist_js_build () {
 function dist_css_build () {
     var less = require('gulp-less');
 
-    const bootstrap = gulp.src([
-        'node_modules/bootstrap/less/alerts.less',
-        'node_modules/bootstrap/less/badges.less',
-        'node_modules/bootstrap/less/breadcrumbs.less',
-        'node_modules/bootstrap/less/button-groups.less',
-        'node_modules/bootstrap/less/buttons.less',
-        'node_modules/bootstrap/less/carousel.less',
-        'node_modules/bootstrap/less/close.less',
-        'node_modules/bootstrap/less/code.less',
-        'node_modules/bootstrap/less/component-animations.less',
-        'node_modules/bootstrap/less/dropdowns.less',
-        'node_modules/bootstrap/less/forms.less',
-        'node_modules/bootstrap/less/glyphicons.less',
-        'node_modules/bootstrap/less/grid.less',
-        'node_modules/bootstrap/less/input-groups.less',
-        'node_modules/bootstrap/less/jumbotron.less',
-        'node_modules/bootstrap/less/labels.less',
-        'node_modules/bootstrap/less/list-group.less',
-        'node_modules/bootstrap/less/mixins.less',
-        'node_modules/bootstrap/less/modals.less',
-        'node_modules/bootstrap/less/navbar.less',
-        'node_modules/bootstrap/less/navs.less',
-        'node_modules/bootstrap/less/normalize.less',
-        'node_modules/bootstrap/less/pager.less',
-        'node_modules/bootstrap/less/pagination.less',
-        'node_modules/bootstrap/less/panels.less',
-        'node_modules/bootstrap/less/popovers.less',
-        'node_modules/bootstrap/less/progress-bars.less',
-        'node_modules/bootstrap/less/responsive-embed.less',
-        'node_modules/bootstrap/less/responsive-utilities.less',
-        'node_modules/bootstrap/less/scaffolding.less',
-        'node_modules/bootstrap/less/tables.less',
-        'node_modules/bootstrap/less/thumbnails.less',
-        'node_modules/bootstrap/less/tooltip.less',
-        'node_modules/bootstrap/less/type.less',
-        'node_modules/bootstrap/less/utilities.less',
-        'node_modules/bootstrap/less/variables.less',
-        'node_modules/bootstrap/less/wells.less',
-    ])
-        .pipe(concat('bootstrap.less'))
-        .pipe(less());
+    const bootstrap = gulp.src('public/less/bootstrap.less')
+        .pipe(less({
+            paths: [
+                path.join(__dirname, 'node_modules', 'bootstrap', 'less'),
+            ],
+        }));
 
     const modulesCss = gulp.src([
         'node_modules/ui-select/dist/select.min.css',
         'node_modules/angularjs-bootstrap-datetimepicker/src/css/datetimepicker.css',
         'node_modules/angular-ui-tree/dist/angular-ui-tree.min.css',
         'node_modules/c3/c3.min.css',
-        'node_modules/angular-xeditable/dist/css/xeditable.min.css',
         'node_modules/angular-bootstrap-colorpicker/css/colorpicker.min.css',
         'node_modules/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css',
         'node_modules/font-awesome/css/font-awesome.min.css',
@@ -195,7 +159,6 @@ function dist_templates_build () {
     const globs = [
         'public/partials/core/*.html',
         'public/partials/dashboards/*.html',
-        'public/partials/dashboardv2/*.html',
         'public/partials/data-sources/*.html',
         'public/partials/directives/*.html',
         'public/partials/files/*.html',
@@ -252,4 +215,8 @@ function po_update () {
 
 function watch_templates () {
     gulp.watch('public/partials/**/*.html', dist_templates);
+}
+
+function watch_less () {
+    gulp.watch('public/less/*.less', dist_css);
 }

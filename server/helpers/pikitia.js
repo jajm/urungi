@@ -2,9 +2,14 @@ const config = require('config');
 const request = require('request');
 
 module.exports = {
+    isConfigured,
     toPDF,
     toPNG,
 };
+
+function isConfigured () {
+    return config.has('pikitia.url') && config.has('pikitia.client_id') && config.has('pikitia.client_secret');
+}
 
 /**
  * Ask Pikitia to generate a PNG of given URL
@@ -48,8 +53,15 @@ async function render (url, endpoint, options) {
         },
     };
 
-    const body = await requestPromise(tokenRequestOptions);
-    const token = JSON.parse(body);
+    const tokenBody = await requestPromise(tokenRequestOptions);
+    const token = JSON.parse(tokenBody);
+
+    const requestBody = {
+        url: url,
+    };
+    for (const key of Object.keys(options)) {
+        requestBody[key] = options[key];
+    }
 
     const requestOptions = {
         baseUrl: pikitiaUrl,
@@ -58,11 +70,7 @@ async function render (url, endpoint, options) {
         auth: {
             bearer: token.access_token,
         },
-        body: {
-            url: url,
-            cookies: options.cookies,
-            viewport: options.viewport,
-        },
+        body: requestBody,
         json: true,
         encoding: null,
     };

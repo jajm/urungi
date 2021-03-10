@@ -2,8 +2,9 @@
 
 Lightweight open source software that allows you to create statistics and dashboards freely regardless of your data source. http://urungi.org
 
-[![Travis (.org) branch](https://img.shields.io/travis/biblibre/urungi/master.svg)](https://travis-ci.org/biblibre/urungi)
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/biblibre/urungi.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/biblibre/urungi/context:javascript)
+[![CircleCI](https://img.shields.io/circleci/build/github/biblibre/urungi?logo=circleci)](https://circleci.com/gh/biblibre/urungi)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/biblibre/urungi?logo=lgtm)](https://lgtm.com/projects/g/biblibre/urungi/context:javascript)
+[![Codecov](https://img.shields.io/codecov/c/github/biblibre/urungi?logo=codecov)](https://codecov.io/gh/biblibre/urungi)
 
 ## Introduction
 
@@ -16,9 +17,9 @@ Lightweight open source software that allows you to create statistics and dashbo
 
 ## Requirements
 
-- [nodejs](https://nodejs.org) (>= 8.x)
+- [nodejs](https://nodejs.org) (>= 10.x)
 - [npm](https://www.npmjs.com)
-- [MongoDB](https://www.mongodb.org) (>= 3.4)
+- [MongoDB](https://www.mongodb.org) (>= 3.6)
 
 
 ## Installation
@@ -128,32 +129,7 @@ To upgrade Urungi to the latest version, follow these steps:
 
 ## Tests
 
-To run the tests:
-
-    npm test
-
-Some tests need SQL databases to connect to. To run those tests, copy
-config/test.js to config/local-test.js and modify the configured datasources
-accordingly. The 'status' property determines if the corresponding tests will
-be executed or not.
-
-Before executing tests, the latest version of MongoDB will be downloaded, and
-each test file will get its own instance of MongoDB running with the in-memory
-storage engine. This allows tests to run in parallel and ease testing with
-different versions of MongoDB.
-
-By default, MongoDB binaries are saved inside `node_modules` directory, which
-is deleted each time you call `npm ci`. To avoid re-downloading MongoDB
-binaries, use a different download directory by setting environment variable
-`MONGOMS_DOWNLOAD_DIR`. For instance
-
-    export MONGOMS_DOWNLOAD_DIR=$HOME/.cache/mongodb-memory-server/mongodb-binaries
-
-Or you can avoid the download by using your already installed MongoDB server
-
-    export MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
-
-All options are described at https://github.com/nodkz/mongodb-memory-server#options-which-can-be-set-via-environment-variables
+See [testing](doc/development/testing.md)
 
 ## License
 

@@ -8,7 +8,7 @@
     function DataSourcesListController ($location, $timeout, connection, api, gettextCatalog) {
         const vm = this;
         vm.IntroOptions = {};
-        vm.getDataSources = getDataSources;
+        vm.getDatasources = getDatasources;
         vm.goToPage = goToPage;
         vm.page = 1;
         vm.pages = 1;
@@ -21,6 +21,8 @@
             if ($location.hash() === 'intro') {
                 $timeout(function () { vm.showIntro(); }, 1000);
             }
+
+            getDatasources();
         }
 
         function getIntroOptions () {
@@ -98,7 +100,7 @@
                             gettextCatalog.getString('Layers') +
                             ' (<a href="https://en.wikipedia.org/wiki/Semantic_layer" target="_blank">semantic layers</a>) ' +
                             gettextCatalog.getString('allow your users to access and understand your data without any knowledge of SQL or how the database is structured in tables and fields...') +
-                            '</p><a class="btn btn-info btn-xs" href="/#/layers#intro">' +
+                            '</p><a class="btn btn-info btn-xs" href="layers#intro">' +
                             gettextCatalog.getString('Go to layers and continue tour') +
                             '</a>',
                     }
@@ -106,31 +108,21 @@
             };
         }
 
-        function getDataSources (page, search, fields) {
-            var params = {};
+        function getDatasources (page) {
+            var params = {
+                page: page || 1,
+                fields: 'name,type,connection.host,connection.port,connection.database',
+            };
 
-            params.page = (page) || 1;
-
-            if (search) {
-                vm.search = search;
-            } else if (page === 1) {
-                vm.search = '';
-            }
-            if (vm.search) {
-                params.search = vm.search;
-            }
-
-            if (fields) params.fields = fields;
-
-            return api.getDataSources(params).then(function (data) {
-                vm.items = data.items;
-                vm.page = data.page;
-                vm.pages = data.pages;
+            return api.getDatasources(params).then(function (res) {
+                vm.items = res.data;
+                vm.page = res.page;
+                vm.pages = res.pages;
             });
         }
 
         function goToPage (page) {
-            vm.getDataSources(page, '', ['name', 'type', 'connection.host', 'connection.port', 'connection.database']);
+            getDatasources(page);
         }
     }
 })();

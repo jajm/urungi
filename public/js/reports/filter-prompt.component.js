@@ -27,6 +27,7 @@
         vm.getButtonFilterPromptMessage = getButtonFilterPromptMessage;
         vm.getDatePatternFilters = getDatePatternFilters;
         vm.getElementFilterOptions = getElementFilterOptions;
+        vm.getFilterValues = getFilterValues;
         vm.inputChanged = inputChanged;
         vm.makePrompt = makePrompt;
         vm.onDateListChange = onDateListChange;
@@ -37,12 +38,11 @@
         vm.selectSecondValue = selectSecondValue;
         vm.setDatePatternFilterType = setDatePatternFilterType;
         vm.setFilterType = setFilterType;
-        vm.update = update;
         vm.updateCondition = updateCondition;
+        vm.values = [];
 
         function $onInit () {
             vm.criterion = vm.filter.criterion;
-            $scope.$on('updateFilters', onUpdateFilters);
         }
 
         function removeFilter () {
@@ -80,19 +80,17 @@
             vm.onChange();
         }
 
-        function onUpdateFilters () {
-            vm.update();
-        }
+        function getFilterValues (term) {
+            const options = {
+                contains: term,
+                limit: 15,
+            };
 
-        function update () {
-            loadFilterValues();
-        }
-
-        function loadFilterValues () {
-            return api.getReportFilterValues(vm.filter).then(function (result) {
-                let values = result.data.map(row => row.f);
-                values = values.filter(f => f !== null && f !== undefined && f !== '');
+            return api.getReportFilterValues(vm.filter, options).then(function (result) {
+                const values = result.data.map(row => row.f).filter(f => f !== null && f !== undefined && f.trim() !== '');
                 vm.values = values;
+
+                return values;
             });
         }
 
@@ -165,32 +163,32 @@
 
         function getFilterTypeLabel (filterType) {
             const labels = {
-                'equal': gettextCatalog.getString('is equal to'),
+                equal: gettextCatalog.getString('is equal to'),
                 'equal-pattern': gettextCatalog.getString('is equal to (pattern)'),
-                'diferentThan': gettextCatalog.getString('is different than'),
+                diferentThan: gettextCatalog.getString('is different than'),
                 'diferentThan-pattern': gettextCatalog.getString('is different than (pattern)'),
-                'in': gettextCatalog.getString('is in'),
-                'notIn': gettextCatalog.getString('is not in'),
-                'biggerThan': gettextCatalog.getString('is bigger than'),
+                in: gettextCatalog.getString('is in'),
+                notIn: gettextCatalog.getString('is not in'),
+                biggerThan: gettextCatalog.getString('is bigger than'),
                 'biggerThan-pattern': gettextCatalog.getString('is bigger than (pattern)'),
-                'biggerOrEqualThan': gettextCatalog.getString('is bigger or equal than'),
+                biggerOrEqualThan: gettextCatalog.getString('is bigger or equal than'),
                 'biggerOrEqualThan-pattern': gettextCatalog.getString('is bigger or equal than (pattern)'),
-                'lessThan': gettextCatalog.getString('is less than'),
+                lessThan: gettextCatalog.getString('is less than'),
                 'lessThan-pattern': gettextCatalog.getString('is less than (pattern)'),
-                'lessOrEqualThan': gettextCatalog.getString('is less or equal than'),
+                lessOrEqualThan: gettextCatalog.getString('is less or equal than'),
                 'lessOrEqualThan-pattern': gettextCatalog.getString('is less or equal than (pattern)'),
-                'between': gettextCatalog.getString('is between'),
-                'notBetween': gettextCatalog.getString('is not between'),
-                'contains': gettextCatalog.getString('contains'),
-                'notContains': gettextCatalog.getString('does not contain'),
-                'startWith': gettextCatalog.getString('starts with'),
-                'notStartWith': gettextCatalog.getString('does not start with'),
-                'endsWith': gettextCatalog.getString('ends with'),
-                'notEndsWith': gettextCatalog.getString('does not end with'),
-                'like': gettextCatalog.getString('is like'),
-                'notLike': gettextCatalog.getString('is not like'),
-                'null': gettextCatalog.getString('is null'),
-                'notNull': gettextCatalog.getString('is not null'),
+                between: gettextCatalog.getString('is between'),
+                notBetween: gettextCatalog.getString('is not between'),
+                contains: gettextCatalog.getString('contains'),
+                notContains: gettextCatalog.getString('does not contain'),
+                startWith: gettextCatalog.getString('starts with'),
+                notStartWith: gettextCatalog.getString('does not start with'),
+                endsWith: gettextCatalog.getString('ends with'),
+                notEndsWith: gettextCatalog.getString('does not end with'),
+                like: gettextCatalog.getString('is like'),
+                notLike: gettextCatalog.getString('is not like'),
+                null: gettextCatalog.getString('is null'),
+                notNull: gettextCatalog.getString('is not null'),
             };
 
             if (filterType in labels) {

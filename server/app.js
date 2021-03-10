@@ -26,7 +26,7 @@ const connection = require('./config/mongoose')();
 
 const mongoStore = new MongoStore({
     mongooseConnection: connection,
-    collection: 'wst_Sessions',
+    collection: 'sessions',
     ttl: 60 * 60 * 24, // 24 hours
 });
 app.use(cookieParser());
@@ -56,41 +56,35 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json({ limit: '50mb' })); // get information from html forms
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var authentication = true;
-
-global.authentication = authentication;
 global.logFailLogin = true;
 global.logSuccessLogin = true;
 
-if (authentication) {
-    app.use(passport.initialize());
-    app.use(passport.session());
-    app.use(passport.authenticate('remember-me'));
-}
+app.use(passport.initialize());
+app.use(passport.session());
 
 require('./config/passport')(passport);
 
 require('./config/routes')(app, passport);
 
-app.use('/uploads', restrict, express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', restrict, express.static(path.join(__dirname, '..', 'uploads')));
+
+const api = require('./routes/api.js');
+app.use('/api', api);
 
 // Custom routes
 const routesModules = [
-    './custom/companies/routes',
     './custom/dashboards/routes',
-    './custom/dashboardsv2/routes',
-    './custom/data-sources/routes',
-    './custom/files/routes',
-    './custom/layers/routes',
     './custom/reports/routes',
-    './custom/roles/routes',
-    './custom/statistics/routes',
-    './custom/users/routes',
-    './custom/version/routes',
 ];
 
 for (const routesModule of routesModules) {
     require(routesModule)(app);
 }
+
+// Catch-all route, it should always be defined last
+app.get('*', function (req, res) {
+    res.cookie('XSRF-TOKEN', req.csrfToken(), { sameSite: true });
+    res.render('index', { base: config.get('base') });
+});
 
 module.exports = app;

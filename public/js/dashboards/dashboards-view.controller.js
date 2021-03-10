@@ -3,11 +3,15 @@
 
     angular.module('app.dashboards').controller('DashboardsViewController', DashboardsViewController);
 
-    DashboardsViewController.$inject = ['$scope', '$timeout', '$compile', 'userService', 'dashboard'];
+    DashboardsViewController.$inject = ['$scope', '$timeout', '$compile', '$uibModal', 'Noty', 'gettextCatalog', 'api', 'userService', 'dashboard'];
 
-    function DashboardsViewController ($scope, $timeout, $compile, userService, dashboard) {
+    function DashboardsViewController ($scope, $timeout, $compile, $uibModal, Noty, gettextCatalog, api, userService, dashboard) {
         const vm = this;
 
+        vm.downloadAsPDF = downloadAsPDF;
+        vm.downloadAsPNG = downloadAsPNG;
+        vm.exportAsPDFAvailable = false;
+        vm.exportAsPNGAvailable = false;
         vm.mode = 'preview';
         vm.prompts = {};
         vm.dashboard = dashboard;
@@ -20,6 +24,12 @@
         function activate () {
             userService.getCurrentUser().then(user => {
                 vm.isAdmin = user.isAdmin();
+            }, () => {});
+            api.isDashboardAsPDFAvailable(dashboard._id).then(available => {
+                vm.exportAsPDFAvailable = available;
+            });
+            api.isDashboardAsPNGAvailable(dashboard._id).then(available => {
+                vm.exportAsPNGAvailable = available;
             });
             loadHTML();
         }
@@ -112,6 +122,35 @@
                 '</div>';
 
             return html;
+        }
+
+        function downloadAsPDF () {
+            const modal = $uibModal.open({
+                component: 'appPdfExportSettingsModal',
+            });
+
+            return modal.result.then(function (settings) {
+                return api.getDashboardAsPDF(vm.dashboard._id, settings).then(res => {
+                    download(res.data, 'application/pdf', vm.dashboard.dashboardName + '.pdf');
+                }, () => {
+                    new Noty({ text: gettextCatalog.getString('The export failed. Please contact the system administrator.'), type: 'error' }).show();
+                });
+            }, () => {});
+        }
+
+        function downloadAsPNG () {
+            api.getDashboardAsPNG(vm.dashboard._id).then(res => {
+                download(res.data, 'image/png', vm.dashboard.dashboardName + '.png');
+            }, () => {
+                new Noty({ text: gettextCatalog.getString('The export failed. Please contact the system administrator.'), type: 'error' }).show();
+            });
+        }
+
+        function download (data, type, filename) {
+            const a = document.createElement('a');
+            a.download = filename;
+            a.href = 'data:' + type + ';base64,' + data;
+            a.dispatchEvent(new MouseEvent('click'));
         }
     }
 })();

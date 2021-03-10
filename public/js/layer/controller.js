@@ -1,9 +1,8 @@
 /* global jsPlumb: false */
-angular.module('app').controller('layerCtrl', function ($scope, $location, api, connection, $routeParams, $timeout, $window, gettextCatalog, Noty) {
+angular.module('app').controller('layerCtrl', function ($scope, $location, api, $routeParams, $timeout, $window, gettextCatalog, Noty) {
     $scope.layerModal = 'partials/layer/layerModal.html';
     $scope.sqlModal = 'partials/layer/sqlModal.html';
     $scope.elementModal = 'partials/layer/elementModal.html';
-    $scope.statusInfoModal = 'partials/common/statusInfo.html';
     $scope.setupModal = 'partials/layer/setupModal.html';
     $scope.addAllModal = 'partials/layer/addAllModal.html';
     $scope.ReadOnlyDataSourceSelector = false;
@@ -83,18 +82,18 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
             strokeWidth: 3
         },
         isSource: true,
-        connector: [ 'Flowchart', { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true } ],
+        connector: ['Flowchart', { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true }],
         connectorStyle: connectorPaintStyle,
         hoverPaintStyle: endpointHoverStyle,
         connectorHoverStyle: connectorHoverStyle,
         maxConnections: -1,
         dragOptions: {},
         overlays: [
-            [ 'Label', {
+            ['Label', {
                 location: [0.5, 1.5],
                 label: '',
                 cssClass: 'endpointSourceLabel'
-            } ]
+            }]
         ]
     };
 
@@ -107,7 +106,7 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
         dropOptions: { hoverClass: 'hover', activeClass: 'active' },
         isTarget: true,
         overlays: [
-            [ 'Label', { location: [0.5, -0.5], label: '', cssClass: 'endpointTargetLabel' } ]
+            ['Label', { location: [0.5, -0.5], label: '', cssClass: 'endpointTargetLabel' }]
         ]
     };
 
@@ -130,14 +129,6 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
             newEndpoints.push(nedp.getUuid());
         }
         return newEndpoints;
-    };
-
-    $scope.newLayer = function () {
-        $scope._Layer = {};
-        $scope._Layer.params = {};
-        $scope._Layer.status = 'Not active';
-        $scope.mode = 'add';
-        $('#layerModal').modal('show');
     };
 
     function setDraggable (targetID) {
@@ -173,9 +164,8 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
 
     $scope.view = function () {
         if ($routeParams.layerID) {
-            connection.get('/api/layers/find-one', { id: $routeParams.layerID }).then(function (data) {
-                $scope._Layer = data.item;
-                $scope.mode = 'edit';
+            api.getLayer($routeParams.layerID).then(function (layer) {
+                $scope._Layer = layer;
                 $scope.rootItem.elements = $scope._Layer.objects;
 
                 $scope.forAllElements((element) => {
@@ -192,29 +182,6 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
                     $scope._Layer.params = {};
                     $scope._Layer.params.schema = [];
                 }
-
-                var currentZoom = 1.0;
-                var onZoom = false;
-
-                $(document).ready(function () {
-                    $('#collections').bind('mousewheel DOMMouseScroll', function (e) {
-                        e.preventDefault();
-
-                        if (onZoom) return;
-
-                        onZoom = true;
-
-                        if (e.originalEvent.wheelDelta / 120 > 0) {
-                            $('#canvas').animate({ 'zoom': currentZoom += 0.1 }, 250, function () {
-                                onZoom = false;
-                            });
-                        } else {
-                            $('#canvas').animate({ 'zoom': currentZoom -= 0.1 }, 250, function () {
-                                onZoom = false;
-                            });
-                        }
-                    });
-                });
             });
         };
     };
@@ -236,25 +203,14 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
             theLayer.params.joins[join].connection = undefined;
         }
 
-        if ($scope.mode === 'add') {
-            theLayer.objects = $scope.rootItem.elements;
-            var data = theLayer;
-            connection.post('/api/layers/create', data).then(function (data) {
-                $scope.items.push(data.item);
-                $('#layerModal').modal('hide');
-            });
-        } else {
-            connection.post('/api/layers/update/' + theLayer._id, theLayer).then(function (result) {
-                if (result.result === 1) {
-                    window.history.back();
-                }
-            });
-        }
+        api.replaceLayer(theLayer).then(function () {
+            $location.url('/layers');
+        });
     };
 
     function getDatasources () {
         api.getDatasource($scope._Layer.datasourceID).then(function (datasource) {
-            $scope.datasources = [ datasource ];
+            $scope.datasources = [datasource];
         });
     };
 
@@ -292,19 +248,9 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
     };
 
     $scope.addSqlToLayer = function () {
-        api.getSqlQuerySchema($scope._Layer.datasourceID, $scope.temporarySQLCollection).then(function (result) {
-            if (result.result !== 1) {
-                $scope.errorToken = result;
-                return;
-            }
+        delete $scope.temporarySQLCollection.error;
 
-            if (!result.isValid) {
-                $scope.temporarySQLCollection.invalidSql = true;
-                return;
-            }
-
-            const collection = result.schema;
-
+        api.getSqlQueryCollection($scope._Layer.datasourceID, $scope.temporarySQLCollection).then(function (collection) {
             collection.collectionID = 'C' + $scope.newID();
 
             for (const element of collection.elements) {
@@ -329,51 +275,52 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
 
             $('#sqlModal').modal('hide');
             $scope.erDiagramInit();
+        }, function (err) {
+            $scope.temporarySQLCollection.error = err.message;
         });
     };
 
     $scope.saveSQLChanges = function () {
-        api.getSqlQuerySchema($scope._Layer.datasourceID, $scope.temporarySQLCollection).then(function (result) {
-            if (result.result === 1 && result.items.length > 0) {
-                // The result is an array but I think it never holds more than one element.
+        delete $scope.temporarySQLCollection.error;
 
-                var currentCol = $scope.theSelectedElement;
-                var newCol = result.items[0];
+        api.getSqlQueryCollection($scope._Layer.datasourceID, $scope.temporarySQLCollection).then(function (newCol) {
+            var currentCol = $scope.theSelectedElement;
 
-                for (const e in newCol.elements) {
-                    newCol.elements[e].collectionID = currentCol.collectionID;
-                    newCol.elements[e].collectionName = currentCol.collectionName;
-                }
-
-                $scope.elementMatch = {};
-                $scope.lostElements = [];
-                $scope.newElements = [];
-                $scope.matchedElements = [];
-
-                for (const e1 of newCol.elements) {
-                    $scope.elementMatch[e1.elementID] = null;
-                    for (const e2 of currentCol.elements) {
-                        if (e1.elementName === e2.elementName) {
-                            $scope.elementMatch[e1.elementID] = e2;
-                            $scope.matchedElements.push(e2);
-                        }
-                    }
-                }
-
-                for (const el of currentCol.elements) {
-                    if ($scope.matchedElements.indexOf(el) < 0) {
-                        $scope.lostElements.push(el);
-                    }
-                }
-
-                for (const el of newCol.elements) {
-                    if (!$scope.elementMatch[el.elementID]) {
-                        $scope.newElements.push(el);
-                    }
-                }
-
-                $scope.newSQLCollection = newCol;
+            for (const e in newCol.elements) {
+                newCol.elements[e].collectionID = currentCol.collectionID;
+                newCol.elements[e].collectionName = currentCol.collectionName;
             }
+
+            $scope.elementMatch = {};
+            $scope.lostElements = [];
+            $scope.newElements = [];
+            $scope.matchedElements = [];
+
+            for (const e1 of newCol.elements) {
+                $scope.elementMatch[e1.elementID] = null;
+                for (const e2 of currentCol.elements) {
+                    if (e1.elementName === e2.elementName) {
+                        $scope.elementMatch[e1.elementID] = e2;
+                        $scope.matchedElements.push(e2);
+                    }
+                }
+            }
+
+            for (const el of currentCol.elements) {
+                if ($scope.matchedElements.indexOf(el) < 0) {
+                    $scope.lostElements.push(el);
+                }
+            }
+
+            for (const el of newCol.elements) {
+                if (!$scope.elementMatch[el.elementID]) {
+                    $scope.newElements.push(el);
+                }
+            }
+
+            $scope.newSQLCollection = newCol;
+        }, function (err) {
+            $scope.temporarySQLCollection.error = err.message;
         });
     };
 
@@ -556,7 +503,7 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
         // this timeout is here to give time to angular to create the element's divs'
             setTimeout(function () {
                 instance = jsPlumb.getInstance({
-                    Connector: [ 'Flowchart', { cornerRadius: 5 } ],
+                    Connector: ['Flowchart', { cornerRadius: 5 }],
                     Endpoint: ['Dot', { radius: 2 }],
                     PaintStyle: {
                         strokeWidth: 4,
@@ -1015,12 +962,6 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
         element.values.push({ value: value, label: label });
     };
 
-    $scope.addAssociatedElementToElement = function (element, associatedElement, isVisible) {
-        if (!element.associatedElements) element.associatedElements = [];
-
-        element.associatedElements.push({ element: associatedElement, visible: isVisible });
-    };
-
     $scope.addFolder = function () {
         var elementID = 'F' + $scope.newID();
 
@@ -1039,7 +980,7 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
         for (var s in $scope._Layer.params.schema) {
             for (var e in $scope._Layer.params.schema[s].elements) {
                 if ($scope._Layer.params.schema[s].elements[e].elementID === elementID) {
-                    delete $scope._Layer.params.schema[s].elements[e]['elementRole'];
+                    delete $scope._Layer.params.schema[s].elements[e].elementRole;
                 }
             }
         }
@@ -1075,7 +1016,7 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
         for (var s in $scope._Layer.params.schema) {
             for (var e in $scope._Layer.params.schema[s].elements) {
                 if ($scope._Layer.params.schema[s].elements[e].elementID === elementID) {
-                    delete $scope._Layer.params.schema[s].elements[e]['elementRole'];
+                    delete $scope._Layer.params.schema[s].elements[e].elementRole;
                 }
             }
         }
@@ -1161,43 +1102,14 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
         }
     }
 
-    $scope.getCollectionElements = function (collectionID) {
-        if ($scope._Layer) {
-            if ($scope._Layer.params) {
-                if ($scope._Layer.params.schema) {
-                    if ($scope._Layer.params.schema.length > 0) {
-                        for (var e in $scope._Layer.params.schema) {
-                            if ($scope._Layer.params.schema[e].collectionID === collectionID) { return $scope._Layer.params.schema[e].elements; }
-                        }
-                    }
-                }
-            }
-        }
-    };
-
     $scope.getDatasetsForThisDts = function (_id, theDataSource) {
         if (!theDataSource.loading) {
             theDataSource.loading = true;
-            connection.get('/api/data-sources/getEntities', { id: _id }).then(function (data) {
+            api.getDatasourceCollections(_id).then(function (data) {
                 theDataSource.loading = false;
-                if (data.result === 1) {
-                    theDataSource.entities = data.items;
-                } else {
-                    if (data.actionCode === 'INVALIDATEDTS') {
-                        theDataSource.status = -1;
-                        theDataSource.statusInfo = { errorCode: data.code, actionCode: data.actionCode, message: data.msg, lastDate: new Date() };
-                    }
-                }
+                theDataSource.entities = data.data;
             });
         }
-    };
-
-    $scope.getFieldsForThisEntity = function (dataSourceID, entity, theEntity) {
-        api.getEntitiesSchema(dataSourceID, entity).then(function (result) {
-            if (result.result === 1) {
-                theEntity.fields = result.items[0].elements;
-            }
-        });
     };
 
     $scope.selectedCanvas = function (event) {
@@ -1236,9 +1148,6 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
 
         $scope.selectedItem = 'collection';
         $scope.theSelectedElement = theCollection;
-        $scope.selected_name = theCollection.table_name;
-        $scope.selected_schema_name = theCollection.schema_name;
-        $scope.selected_decription = theCollection.description;
         // if ($scope.joinMode)
         //  collectionHighliter(theCollection.collectionID);
 
@@ -1254,11 +1163,6 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
         unSelect();
         $scope.selectedItem = 'element';
         $scope.theSelectedElement = theElement;
-        $scope.selected_name = theElement.column_name;
-        $scope.selected_schema_name = theElement.table_schema;
-        $scope.selected_table_name = theElement.table_name;
-        $scope.selected_decription = theElement.description;
-        $scope.selected_data_type = theElement.data_type;
         if (theElement.isPK) { $scope.selected_primary_key = true; } else { $scope.selected_primary_key = false; }
 
         if ($scope.selectedElements) {
@@ -1268,11 +1172,6 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
         setSelectedElements();
     };
 
-    $scope.showStatusInfo = function (statusInfo) {
-        $scope.statusInfo = statusInfo;
-        $('#statusInfo').modal('show');
-    };
-
     function setSelectedElements () {
         for (var s in $scope.selectedElements) {
             $('#' + $scope.selectedElements[s]).addClass('selectedElement');
@@ -1280,15 +1179,9 @@ angular.module('app').controller('layerCtrl', function ($scope, $location, api, 
         $scope.tabs.selected = 'properties';
     }
 
-    $scope.addDatasetToLayer = function (datasourceID, entity) {
+    $scope.addDatasetToLayer = function (datasourceID, collectionName) {
         if ($scope._Layer.datasourceID === datasourceID) {
-            api.getEntitiesSchema(datasourceID, entity).then(function (result) {
-                if (result.result !== 1) {
-                    return;
-                }
-
-                const collection = result.schema;
-
+            api.getDatasourceCollection(datasourceID, collectionName).then(function (collection) {
                 collection.collectionID = 'C' + $scope.newID();
 
                 for (const element of collection.elements) {

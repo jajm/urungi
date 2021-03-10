@@ -29,24 +29,16 @@ module.exports = function () {
         debug('Mongoose default connection disconnected');
     });
 
-    // If the Node process ends, close the Mongoose connection
-    process.on('SIGINT', function () {
-        connection.close(function () {
-            debug('Mongoose default connection disconnected through app termination');
-        });
-    });
-
-    require('../custom/companies/model');
-    require('../custom/dashboards/model');
-    require('../custom/dashboardsv2/model');
-    require('../custom/data-sources/model');
-    require('../custom/files/model');
-    require('../custom/layers/model');
-    require('../custom/logs/model');
-    require('../custom/reports/model');
-    require('../custom/roles/model');
-    require('../custom/statistics/model');
-    require('../custom/users/model');
+    require('../models/company');
+    require('../models/dashboard');
+    require('../models/datasource');
+    require('../models/file');
+    require('../models/layer');
+    require('../models/log');
+    require('../models/report');
+    require('../models/statistic');
+    require('../models/user');
+    require('../models/role');
 
     return connection;
 };

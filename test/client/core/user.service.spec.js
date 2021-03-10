@@ -22,16 +22,12 @@ describe('userService', function () {
     });
 
     describe('getCurrentUser', function () {
-        it('should return a valid user', function () {
-            $httpBackend.expect('GET', '/api/get-user-data')
+        it('should return a valid user', async function () {
+            $httpBackend.expect('GET', '/api/user')
                 .respond(apiGetUserDataResponse());
 
-            let user;
-            expect(userService.getCurrentUser().then(currentUser => {
-                user = currentUser;
-            })).resolves.toBeUndefined();
-
-            $httpBackend.flush();
+            setTimeout($httpBackend.flush);
+            const user = await userService.getCurrentUser();
 
             expect(user.userName).toBe('foo');
             expect(user.status).toBe('active');
@@ -40,16 +36,9 @@ describe('userService', function () {
 
         function apiGetUserDataResponse () {
             return {
-                result: 1,
-                page: 1,
-                pages: 1,
-                items: {
-                    user: {
-                        userName: 'foo',
-                        status: 'active',
-                        roles: ['ADMIN'],
-                    },
-                },
+                userName: 'foo',
+                status: 'active',
+                roles: ['ADMIN'],
             };
         }
     });

@@ -3,11 +3,11 @@
 
     angular.module('app.core').factory('language', language);
 
-    language.$inject = ['gettextCatalog', 'moment'];
+    language.$inject = ['gettextCatalog', 'moment', 'base'];
 
-    function language (gettextCatalog, moment) {
+    function language (gettextCatalog, moment, base) {
         const defaultLanguage = 'en';
-        const availableLanguages = ['en', 'fr'];
+        const availableLanguages = ['en', 'es', 'fr'];
 
         const service = {
             getAvailableLanguages: getAvailableLanguages,
