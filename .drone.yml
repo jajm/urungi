@@ -16,6 +16,7 @@ services:
 - name: mariadb
   image: mariadb:10.3
   environment:
+    MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
     MYSQL_DATABASE: urungi_tests
     MYSQL_USER: urungi
     MYSQL_PASSWORD: urungi
@@ -45,6 +46,7 @@ services:
 - name: mariadb
   image: mariadb:10.3
   environment:
+    MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
     MYSQL_DATABASE: urungi_tests
     MYSQL_USER: urungi
     MYSQL_PASSWORD: urungi
